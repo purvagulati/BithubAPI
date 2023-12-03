@@ -1,0 +1,33 @@
+{
+    "name": "typescript-starter",
+    "version": "1.0.0",
+    "description": "Starter code in TypeScript for A0 and beyond",
+    "author": "Saumya, Purva and Shreya",
+    "license": "MIT",
+    "main": "out/index.js",
+    "scripts": {
+        "build": "npx tsc",
+        "test": "jest --coverage",
+        "lint": "gts lint",
+        "clean": "gts clean",
+        "compile": "tsc",
+        "fix": "gts fix",
+        "prepare": "npm run compile",
+        "pretest": "npm run compile",
+        "posttest": "npm run lint",
+        "start": "node server.js"
+    },
+    "devDependencies": {
+        "@types/jest": "^29.5.6",
+        "@types/node": "20.8.2",
+        "gts": "^5.2.0",
+        "ts-jest": "^29.1.1",
+        "typescript": "~5.2.0"
+    },
+    "dependencies": {
+        "apollo-server": "^3.13.0",
+        "apollo-server-express": "^3.13.0",
+        "express": "^4.18.2",
+        "graphql": "^16.8.1"
+    }
+}
