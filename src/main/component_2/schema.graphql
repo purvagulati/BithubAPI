@@ -1,16 +1,34 @@
 type Query {
-  persons: [Person]
+    PRDetailsById(id: ID!): PR
+    ListPRs(status: String, page: Int, perPage: Int): [PR]
+    PRComments(prId: ID!): [Comment]
 }
 
-type Person {
-  id: ID!
-  name: String
-  age: Int
-  username: String
-  posts: [Post]
+type Mutation {
+    CreatePR(description: String, sourceCommit: ID, branchTarget: ID): PR
+    AddPRComment(prId: ID!, content: String!, lineNumber: Int): Comment
+    ReactToComment(commentId: ID!, reactionType: String!): Comment
+    UpdatePRStatus(prId: ID!, newStatus: String!): PR
+    MergePR(prId: ID!): PR
 }
 
-type Post {
-  id: ID!
-  name: String
+type PR {
+    id: ID!
+    description: String
+    sourceCommit: ID
+    branchTarget: ID
+    status: String
+    comments: [Comment]
+}
+
+type Comment {
+    id: ID!
+    type: String
+    content: String
+    reactions: [Reaction]
+}
+
+type Reaction {
+    type: String
+    count: Int
 }
