@@ -13,11 +13,15 @@ commits = {
     'hash456': {'hash': 'hash456', 'message': 'Dev commit', 'repo_id': 1},
     'hash789': {'hash': 'hash789', 'message': 'Initial commit', 'repo_id': 2}
 }
+
 trees = {
-    'hash123': {'/': ['file1.txt', 'dir1/']},
-    'hash456': {'/': ['file2.txt', 'dir2/']},
-    'hash789': {'/': ['file3.txt', 'dir3/']}
+    'hash123': {
+        '/': {'type': 'tree', 'items': {'file1.txt': 'blob', 'dir1': 'tree'}},
+        'dir1/': {'type': 'tree', 'items': {'file2.txt': 'blob', 'subdir': 'tree'}},
+        'dir1/subdir/': {'type': 'tree', 'items': {'file3.txt': 'blob'}}
+    },
 }
+
 files = {
     'file1.txt': 'Content of file1',
     'file2.txt': 'Content of file2',
@@ -54,25 +58,8 @@ comments = {
             'date': '2023-01-03'
         }
     ]
-    # ... more comments for other issues ...
+
 }
-
-
-# Error Handling
-@app.errorhandler(404)
-def resource_not_found(e):
-    return jsonify(error=str(e)), 404
-
-
-@app.errorhandler(400)
-def bad_request(e):
-    return jsonify(error=str(e)), 400
-
-
-@app.errorhandler(500)
-def internal_server_error(e):
-    return jsonify(error="Internal server error"), 500
-
 
 # Repository Endpoints
 @app.route('/repositories', methods=['GET'])
@@ -103,17 +90,36 @@ def list_tags(repo_id):
         abort(404, description=f"Repository with ID {repo_id} not found.")
     return jsonify(repo.get('tags', []))
 
+@app.route('/repositories/<int:repo_id>/commits', methods=['GET'])
+def list_all_commits(repo_id):
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 10, type=int)
+
+    repo = repositories.get(repo_id)
+    if not repo:
+        abort(404, description=f"Repository with ID {repo_id} not found.")
+
+    repo_commits = [commit for commit in commits.values() if commit['repo_id'] == repo_id]
+    paginated_commits = paginate(repo_commits, page, per_page)
+
+    return jsonify(paginated_commits)
 
 @app.route('/repositories/<int:repo_id>/branches/<branch_name>/commits', methods=['GET'])
 def list_commits_on_branch(repo_id, branch_name):
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 10, type=int)
+
     repo = repositories.get(repo_id)
     if not repo:
         abort(404, description=f"Repository with ID {repo_id} not found.")
     if branch_name not in repo.get('branches', {}):
         abort(404, description=f"Branch {branch_name} not found in repository {repo_id}.")
-    branch_commit_hash = repo['branches'][branch_name]
-    commit = commits.get(branch_commit_hash)
-    return jsonify([commit] if commit else [])
+
+    branch_commit_hashes = repo['branches'].get(branch_name, [])
+    branch_commits = [commits[hash] for hash in branch_commit_hashes if hash in commits]
+    paginated_commits = paginate(branch_commits, page, per_page)
+
+    return jsonify(paginated_commits)
 
 
 @app.route('/repositories/<int:repo_id>/commits/<commit_hash>', methods=['GET'])
@@ -135,17 +141,35 @@ def view_repository_tree_for_commit(repo_id, commit_hash):
     return jsonify(tree)
 
 
-@app.route('/repositories/<int:repo_id>/tree/<tree_hash>/<path>', methods=['GET'])
+@app.route('/repositories/<int:repo_id>/tree/<tree_hash>/<path:path>', methods=['GET'])
 def retrieve_file_or_directory_content(repo_id, tree_hash, path):
     commit = commits.get(tree_hash)
     if not commit or commit['repo_id'] != repo_id:
         abort(404, description=f"Commit with hash {tree_hash} not found in repository {repo_id}.")
-    if path not in files:
-        abort(404, description=f"File or directory {path} not found in the tree with hash {tree_hash}.")
-    return jsonify(files[path])
+
+    # Normalize path
+    if not path.endswith('/'):
+        path += '/'
+
+    tree_entry = trees.get(tree_hash, {}).get(path)
+
+    if not tree_entry:
+        abort(404, description=f"Path '{path}' not found in commit {tree_hash}.")
+
+    if tree_entry['type'] == 'tree':
+        # Return directory contents
+        return jsonify({'type': 'tree', 'content': list(tree_entry['items'].keys())})
+    elif tree_entry['type'] == 'blob':
+        # Return file content
+        file_content = files.get(path.strip('/'))
+        if file_content is None:
+            abort(404, description=f"File '{path}' not found.")
+        return jsonify({'type': 'blob', 'content': file_content})
+    else:
+        abort(500, description="Unexpected content type.")
 
 
-@app.route('/repos/<int:repo_id>/branches/main/latest-commit', methods=['GET'])
+@app.route('/repositories/<int:repo_id>/branches/main/latest-commit', methods=['GET'])
 def view_latest_commit_on_main_branch(repo_id):
     repo = repositories.get(repo_id)
     if not repo or 'main' not in repo.get('branches', {}):
@@ -156,19 +180,36 @@ def view_latest_commit_on_main_branch(repo_id):
 
 
 # Issue Endpoints
-@app.route('/repos/<int:repo_id>/issues', methods=['GET', 'POST'])
+
+@app.route('/repositories/<int:repo_id>/issues', methods=['GET', 'POST'])
 def issues_operations(repo_id):
     if request.method == 'GET':
-        return jsonify(issues.get(repo_id, []))
+        # Retrieve the optional status query parameter
+        status_filter = request.args.get('status')
+
+        repo_issues = issues.get(repo_id, [])
+
+        # Filter issues by status if the status parameter is provided
+        if status_filter:
+            filtered_issues = [issue for issue in repo_issues if issue['status'] == status_filter]
+        else:
+            filtered_issues = repo_issues
+
+        return jsonify(filtered_issues)
+
     elif request.method == 'POST':
         new_issue_data = request.json
+        # Validate new issue data
+        if 'description' not in new_issue_data or not isinstance(new_issue_data['description'], str):
+            abort(400, description="Invalid issue data: 'description' is required.")
+
         new_issue_id = str(uuid.uuid4())
         new_issue = {'id': new_issue_id, 'repo_id': repo_id, 'status': 'Open', **new_issue_data}
         issues.setdefault(repo_id, []).append(new_issue)
         return jsonify(new_issue), 201
 
 
-@app.route('/repos/<int:repo_id>/issues/<int:issue_id>', methods=['GET', 'PUT'])
+@app.route('/repositories/<int:repo_id>/issues/<int:issue_id>', methods=['GET', 'PUT'])
 def issue_operations(repo_id, issue_id):
     repo_issues = issues.get(repo_id, [])
     issue = next((issue for issue in repo_issues if issue['id'] == issue_id), None)
@@ -179,11 +220,20 @@ def issue_operations(repo_id, issue_id):
         return jsonify(issue)
     elif request.method == 'PUT':
         issue_data = request.json
-        issue['status'] = issue_data.get('status', issue['status'])
+
+        # Validate status update
+        if 'status' not in issue_data or issue_data['status'] not in ['Open', 'Closed']:
+            abort(400, description="Invalid status provided.")
+
+        issue = next((issue for issue in issues.get(repo_id, []) if issue['id'] == issue_id), None)
+        if not issue:
+            abort(404, description=f"Issue with ID {issue_id} not found in repository {repo_id}.")
+
+        issue['status'] = issue_data['status']
         return jsonify(issue)
 
 
-@app.route('/repos/<int:repo_id>/issues/<int:issue_id>/comments', methods=['GET', 'POST'])
+@app.route('/repositories/<int:repo_id>/issues/<int:issue_id>/comments', methods=['GET', 'POST'])
 def issue_comments(repo_id, issue_id):
     repo_issues = issues.get(repo_id, [])
     issue = next((issue for issue in repo_issues if issue['id'] == issue_id), None)
@@ -194,51 +244,53 @@ def issue_comments(repo_id, issue_id):
         return jsonify(issue.get('comments', []))
     elif request.method == 'POST':
         new_comment = request.json
+
+        # Validate new comment
+        if 'text' not in new_comment or not isinstance(new_comment['text'], str):
+            abort(400, description="Invalid comment data: 'text' is required.")
+
+        new_comment_id = str(uuid.uuid4())
+        new_comment['id'] = new_comment_id
+        issue = next((issue for issue in issues.get(repo_id, []) if issue['id'] == issue_id), None)
+        if not issue:
+            abort(404, description=f"Issue with ID {issue_id} not found in repository {repo_id}.")
+
         issue.setdefault('comments', []).append(new_comment)
         return jsonify(new_comment), 201
 
-
-@app.route('/repos/<int:repo_id>/issues/<int:issue_id>', methods=['PUT'])
+@app.route('/repositories/<int:repo_id>/issues/<int:issue_id>', methods=['PUT'])
 def update_issue_status(repo_id, issue_id):
     repo_issues = issues.get(repo_id, [])
     issue = next((issue for issue in repo_issues if issue['id'] == issue_id), None)
     if not issue:
         abort(404, description=f"Issue with ID {issue_id} not found in repository {repo_id}.")
 
-    if 'status' not in request.json or request.json['status'] not in ['Open', 'Closed']:
+    issue_data = request.json
+    if 'status' not in issue_data or issue_data['status'] not in ['Open', 'Closed']:
         abort(400, description="Invalid status provided.")
 
-    issue['status'] = request.json['status']
+    issue['status'] = issue_data['status']
     return jsonify(issue)
 
+# Error Handling
+@app.errorhandler(404)
+def resource_not_found(e):
+    return jsonify(error=str(e)), 404
 
 
-
-@app.route('/repos/<int:repo_id>/issues/<int:issue_id>/add-comment', methods=['POST'])
-def add_comment_to_issue(repo_id, issue_id):
-    # Add a new comment to an issue
-    repo_issues = issues.get(repo_id, [])
-    issue = next((issue for issue in repo_issues if issue['id'] == issue_id), None)
-    if not issue:
-        abort(404, description=f"Issue with ID {issue_id} not found in repository {repo_id}.")
-
-    new_comment = request.json
-    new_comment_id = str(uuid.uuid4())
-    new_comment['id'] = new_comment_id
-    issue.setdefault('comments', []).append(new_comment)
-    return jsonify(new_comment), 201
-
-@app.route('/repos/<int:repo_id>/issues', methods=['POST'])
-def report_issue(repo_id):
-    data = request.json
-    if not data or 'description' not in data or any(key not in ['description'] for key in data.keys()):
-        abort(400, description="Invalid issue data provided.")
-    new_issue_id = str(uuid.uuid4())
-    new_issue = {'id': new_issue_id, 'repo_id': repo_id, 'status': 'Open', 'description': data['description']}
-    issues.setdefault(repo_id, []).append(new_issue)
-    return jsonify(new_issue), 201
+@app.errorhandler(400)
+def bad_request(e):
+    return jsonify(error=str(e)), 400
 
 
+@app.errorhandler(500)
+def internal_server_error(e):
+    return jsonify(error="Internal server error"), 500
+
+def paginate(data, page, per_page):
+    start = (page - 1) * per_page
+    end = start + per_page
+    return data[start:end]
 
 if __name__ == '__main__':
     app.run(debug=True)
