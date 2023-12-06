@@ -1,0 +1,132 @@
+syntax = "proto3";
+
+package bithub;
+
+enum ChangeStatus {
+  UNCOMMITTED = 0;
+  COMMITTED = 1;
+  PUSHED = 2;
+}
+
+// The BithubService service definition.
+service BithubService {
+  rpc WritePRDescription (PRDescriptionRequest) returns (PRDescriptionResponse);
+  rpc SmartAutocomplete (SmartAutocompleteRequest) returns (SmartAutocompleteResponse);
+  rpc ChatGPTForCode (ChatGPTCodeTaskRequest) returns (ChatGPTCodeTaskResponse);
+  rpc VirtualPairProgramming (stream PairProgrammingRequest) returns (stream PairProgrammingResponse); // showed stream for conversation
+}
+
+// Common message definitions
+
+message Delta {
+  bool is_it_commited = 1; // uncommitted or commited changes
+  CodeChanges changes = 2;
+}
+
+message CodeChange {
+  string file_path = 1;
+  string original_code = 2;
+  string modified_code = 3;
+  ChangeStatus change_status = 4; // enum -> uncomitted, commited, or pushed
+}
+
+message CodeChanges {
+  // Multiple Code Change
+  repeated CodeChange code_changes = 1;
+}
+
+message ProposedDelta {
+  Delta file_deltas = 1;
+}
+
+// Clarity on what is recent edit in the current file?
+message Edit {
+  string file_path = 1;
+  int32 line_number = 2;
+  string before_edit = 3;
+  string after_edit = 4;
+}
+
+message Edits {
+  repeated Edit edits = 1;
+}
+
+message FileContent {
+  string file_path = 1;
+  string content = 2;
+}
+
+message RepositoryContent {
+  repeated FileContent files = 1;
+}
+
+message StackTrace {
+  repeated StackFrame frames = 1;
+
+  message StackFrame {
+    string file_name = 1;
+    int32 line_number = 2;
+    string method_name = 3;
+    string code_context = 4; // Code snippet or context around the stack trace line
+  }
+}
+
+message Conversation {
+  repeated ConversationEntry entries = 1;
+
+  message ConversationEntry {
+    string speaker = 1; // Identifier for the speaker (e.g. - "user", "AI")
+    string message = 2;
+    string timestamp = 3; // Optional timestamp for when the message was added
+  }
+}
+
+//Request and Responses
+message PRDescriptionRequest {
+  int32 repository_id = 1;
+  CodeChanges committed_changes = 2;
+}
+
+message PRDescriptionResponse {
+  string draft_description = 1;
+}
+
+message SmartAutocompleteRequest {
+  RepositoryContent repository_content = 1;
+  CodeChanges changes = 2; // Both Commited and uncommited changes on the branch
+  //CodeChanges committed_changes = 2;
+  //CodeChanges uncommitted_changes = 3;
+  Edits recent_edits = 3; // Get more clarity on what is Recent Edit
+}
+
+message SmartAutocompleteResponse {
+  string completion_suggestion = 1;
+}
+
+// Should we have 2 different interface for with Clarification or without clarification 
+message ChatGPTCodeTaskRequest {
+  string task_description = 1;
+  int32 repository_id = 2;
+  CodeChanges committed_changes = 3;
+  CodeChanges uncommitted_changes = 4;
+  string current_file_context = 5; // Added field for current file context
+}
+
+message ChatGPTCodeTaskResponse {
+  string response = 1;
+  Delta delta = 2;
+  bool needs_clarification = 3; // if task_description is not sufficient, return this as true
+}
+
+message PairProgrammingRequest {
+  int32 repository_id = 1;
+  CodeChanges existing_code = 2;
+  StackTrace stack_trace = 3;
+  string issue_description = 4;
+}
+
+message PairProgrammingResponse {
+  Conversation conversation = 1;
+  ProposedDelta proposed_delta = 2;
+  string plain_english_description = 3;
+}
