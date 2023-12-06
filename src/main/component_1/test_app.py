@@ -183,3 +183,40 @@ def test_invalid_repository_id_format(client):
 def test_retrieve_file_with_invalid_path(client):
     response = client.get('/repositories/1/tree/hash123/invalidpath.txt')
     assert response.status_code == 404
+
+def test_update_nonexistent_issue(client):
+    update_data = {'status': 'Closed'}
+    response = client.put('/repos/1/issues/9999', json=update_data)
+    assert response.status_code == 404
+
+def test_nonexistent_branch(client):
+    response = client.get('/repositories/1/branches/nonexistent')
+    assert response.status_code == 404
+
+def test_nonexistent_commit(client):
+    response = client.get('/repositories/1/commits/nonexistent')
+    assert response.status_code == 404
+
+def test_nonexistent_tree_in_commit(client):
+    response = client.get('/repositories/1/commits/nonexistent/tree')
+    assert response.status_code == 404
+
+
+def test_nonexistent_file_in_tree(client):
+    response = client.get('/repositories/1/tree/hash123/nonexistent.txt')
+    assert response.status_code == 404
+
+def test_report_issue_with_missing_fields(client):
+    new_issue = {}  # Missing 'description'
+    response = client.post('/repos/1/issues', json=new_issue)
+    assert response.status_code == 400
+
+def test_report_issue_with_extra_fields(client):
+    new_issue = {'description': 'New issue', 'extra_field': 'extra'}
+    response = client.post('/repos/1/issues', json=new_issue)
+    assert response.status_code == 400
+
+def test_update_issue_invalid_status(client):
+    update_data = {'status': 'InvalidStatus'}
+    response = client.put('/repos/1/issues/1', json=update_data)
+    assert response.status_code == 400
