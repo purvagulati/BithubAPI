@@ -1,34 +1,69 @@
+# schema.graphql
+
 type Query {
-    PRDetailsById(id: ID!): PR
-    ListPRs(status: String, page: Int, perPage: Int): [PR]
-    PRComments(prId: ID!): [Comment]
+  pullRequestById(id: ID!): PullRequest
+  pullRequests(filters: PullRequestFilter): [PullRequest]
+  commentsByPullRequest(pullRequestId: ID!): [Comment]
 }
 
 type Mutation {
-    CreatePR(description: String, sourceCommit: ID, branchTarget: ID): PR
-    AddPRComment(prId: ID!, content: String!, lineNumber: Int): Comment
-    ReactToComment(commentId: ID!, reactionType: String!): Comment
-    UpdatePRStatus(prId: ID!, newStatus: String!): PR
-    MergePR(prId: ID!): PR
+  createPullRequest(input: CreatePullRequestInput!): PullRequest
+  addCommentToPullRequest(input: AddCommentInput!): Comment
+  addReactionToComment(input: AddReactionInput!): Comment
+  mergePullRequest(id: ID!): PullRequest
+  rejectPullRequest(id: ID!): PullRequest
 }
 
-type PR {
-    id: ID!
-    description: String
-    sourceCommit: ID
-    branchTarget: ID
-    status: String
-    comments: [Comment]
+type PullRequest {
+  id: ID!
+  title: String!
+  description: String!
+  sourceCommit: String!
+  targetBranch: String!
+  status: String!
+  user: User!
+  comments: [Comment]
+  fileChanges: [FileChange]
 }
 
 type Comment {
-    id: ID!
-    type: String
-    content: String
-    reactions: [Reaction]
+  id: ID!
+  content: String!
+  lineNumber: Int
+  reactions: [String]
+  pullRequestId: ID!
 }
 
-type Reaction {
-    type: String
-    count: Int
+type User {
+  id: ID!
+  name: String!
+  email: String!
+}
+
+type FileChange {
+  id: ID!
+  fileName: String!
+  changes: String!
+}
+
+input PullRequestFilter {
+  status: String
+}
+
+input CreatePullRequestInput {
+  title: String!
+  description: String!
+  sourceCommit: String!
+  targetBranch: String!
+}
+
+input AddCommentInput {
+  pullRequestId: ID!
+  content: String!
+  lineNumber: Int
+}
+
+input AddReactionInput {
+  commentId: ID!
+  reaction: String!
 }

@@ -1,55 +1,70 @@
-// Mock database interface 
+// db.js
+// Mock database for demonstration purposes
 
-const PRs = []; // Array to store PRs
-const Comments = []; // Array to store comments
+const pullRequests = []; // Array to store pull requests
+const comments = []; // Array to store comments
+
+// Function to find a pull request by ID
+function findPullRequestById(id) {
+  return pullRequests.find(pr => pr.id === id);
+}
+
+// Function to get a list of pull requests
+function getPullRequests(filters = {}) {
+  return pullRequests.filter(pr => {
+    return Object.entries(filters).every(([key, value]) => pr[key] === value);
+  });
+}
+
+// Function to get comments by pull request ID
+function getCommentsByPullRequestId(prId) {
+  return comments.filter(comment => comment.pullRequestId === prId);
+}
+
+// Function to create a new pull request
+function createPullRequest(input) {
+  const newPullRequest = { id: `pr-${Date.now()}`, ...input, status: 'open' };
+  pullRequests.push(newPullRequest);
+  return newPullRequest;
+}
+
+// Function to add a comment to a pull request
+function addCommentToPullRequest(input) {
+  const newComment = { id: `comment-${Date.now()}`, ...input };
+  comments.push(newComment);
+  return newComment;
+}
+
+// Function to add a reaction to a comment
+function addReactionToComment(commentId, reaction) {
+  const comment = comments.find(c => c.id === commentId);
+  if (!comment) return null;
+
+  comment.reactions = comment.reactions || [];
+  comment.reactions.push(reaction);
+  return comment;
+}
+
+// Functions to change the status of a pull request
+function mergePullRequest(id) {
+  const pullRequest = findPullRequestById(id);
+  if (pullRequest) pullRequest.status = 'merged';
+  return pullRequest;
+}
+
+function rejectPullRequest(id) {
+  const pullRequest = findPullRequestById(id);
+  if (pullRequest) pullRequest.status = 'rejected';
+  return pullRequest;
+}
 
 module.exports = {
-    // Fetch a PR by ID
-    getPRById: (id) => PRs.find(pr => pr.id === id),
-
-    // List PRs by status
-    listPRs: (status) => PRs.filter(pr => pr.status === status),
-
-    // Get comments for a PR
-    getComments: (prId) => Comments.filter(comment => comment.prId === prId),
-
-    // Create a PR
-    createPR: (pr) => {
-        PRs.push(pr);
-        return pr;
-    },
-
-    // Add a comment
-    addComment: (comment) => {
-        Comments.push(comment);
-        return comment;
-    },
-
-    // Update a PR's status
-    updatePRStatus: (id, newStatus) => {
-        const pr = PRs.find(pr => pr.id === id);
-        if (pr) {
-            pr.status = newStatus;
-        }
-        return pr;
-    },
-
-    // Merge a PR
-    mergePR: (id) => {
-        const pr = PRs.find(pr => pr.id === id);
-        if (pr && pr.status === 'pending') {
-            pr.status = 'merged';
-        }
-        return pr;
-    },
-
-    // React to a comment
-    reactToComment: (commentId, reaction) => {
-        const comment = Comments.find(c => c.id === commentId);
-        if (comment) {
-            // Add or update reaction count
-            comment.reactions[reaction] = (comment.reactions[reaction] || 0) + 1;
-        }
-        return comment;
-    }
+  findPullRequestById,
+  getPullRequests,
+  getCommentsByPullRequestId,
+  createPullRequest,
+  addCommentToPullRequest,
+  addReactionToComment,
+  mergePullRequest,
+  rejectPullRequest,
 };
