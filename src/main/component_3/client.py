@@ -30,13 +30,15 @@ def run():
                         content="def main():\n    "
                     )
                 ]),
-                changes=bithub_service_pb2.CodeChanges(code_changes=[
+                committed_changes=bithub_service_pb2.CodeChanges(code_changes=[
                     bithub_service_pb2.CodeChange(
                         file_path="utils.py", 
                         original_code="", 
                         modified_code="def helper():\n    return",
                         change_status=bithub_service_pb2.COMMITTED
-                    ),
+                    )
+                ]),
+                uncommitted_changes=bithub_service_pb2.CodeChanges(code_changes=[ 
                     bithub_service_pb2.CodeChange(
                         file_path="main.py", 
                         original_code="", 

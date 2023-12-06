@@ -12,6 +12,7 @@ enum ChangeStatus {
 service BithubService {
   rpc WritePRDescription (PRDescriptionRequest) returns (PRDescriptionResponse);
   rpc SmartAutocomplete (SmartAutocompleteRequest) returns (SmartAutocompleteResponse);
+  // stream -> test 
   rpc ChatGPTForCode (ChatGPTCodeTaskRequest) returns (ChatGPTCodeTaskResponse);
   rpc VirtualPairProgramming (stream PairProgrammingRequest) returns (stream PairProgrammingResponse); // showed stream for conversation
 }
@@ -93,10 +94,9 @@ message PRDescriptionResponse {
 
 message SmartAutocompleteRequest {
   RepositoryContent repository_content = 1;
-  CodeChanges changes = 2; // Both Commited and uncommited changes on the branch
-  //CodeChanges committed_changes = 2;
-  //CodeChanges uncommitted_changes = 3;
-  Edits recent_edits = 3; // Get more clarity on what is Recent Edit
+  CodeChanges committed_changes = 2;
+  CodeChanges uncommitted_changes = 3;
+  Edits recent_edits = 4; // Get more clarity on what is Recent Edit
 }
 
 message SmartAutocompleteResponse {
@@ -105,7 +105,7 @@ message SmartAutocompleteResponse {
 
 // Should we have 2 different interface for with Clarification or without clarification 
 message ChatGPTCodeTaskRequest {
-  string task_description = 1;
+  string task_description = 1; //usually only used this
   int32 repository_id = 2;
   CodeChanges committed_changes = 3;
   CodeChanges uncommitted_changes = 4;
