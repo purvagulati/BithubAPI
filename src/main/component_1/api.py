@@ -3,12 +3,20 @@ import uuid
 
 app = Flask(__name__)
 
-# In-Memory Data Stores
+# In-memory data stores for repositories, commits, trees, files, issues, and comments
 repositories = {
-    1: {'id': 1, 'name': 'Repo 1', 'branches': {'main': 'hash123', 'dev': 'hash456'}, 'tags': ['v1.0']},
-    2: {'id': 2, 'name': 'Repo 2', 'branches': {'main': 'hash789'}, 'tags': ['v2.0']}
+    #  Sample repositories stored as dictionaries
+    1: {'id': 1, 'name': 'Repo 1', 'branches': {'main': ['hash123'], 'dev': ['hash456']}, 'tags': ['v1.0']},
+
+    2: {'id': 2, 'name': 'Repo 2',
+        'branches':
+            {'main': ['hash789']},
+        'tags': ['v2.0']
+        }
 }
+
 commits = {
+    # Sample commits associated with repositories
     'hash123': {'hash': 'hash123', 'message': 'Initial commit', 'repo_id': 1},
     'hash456': {'hash': 'hash456', 'message': 'Dev commit', 'repo_id': 1},
     'hash789': {'hash': 'hash789', 'message': 'Initial commit', 'repo_id': 2}
@@ -27,12 +35,16 @@ files = {
     'file2.txt': 'Content of file2',
     'file3.txt': 'Content of file3'
 }
+
 issues = {
+    # Sample issues for tracking in repositories
     1: [{'id': 1, 'description': 'Issue 1 in Repo 1', 'status': 'Open', 'comments': []}],
     2: [{'id': 2, 'description': 'Issue 1 in Repo 2', 'status': 'Open', 'comments': []}]
 }
 
 comments = {
+    # Sample comments associated with issues
+
     1: [  # Comments for issue with ID 1
         {
             'id': 101,
@@ -61,22 +73,51 @@ comments = {
 
 }
 
+
 # Repository Endpoints
+
 @app.route('/repositories', methods=['GET'])
 def list_repositories():
+    """
+    List all repositories.
+    Returns:
+        JSON response containing a list of repositories.
+    """
     return jsonify(list(repositories.values()))
 
 
 @app.route('/repositories/<int:repo_id>', methods=['GET'])
 def view_specific_repository(repo_id):
+    """
+    View a specific repository by its ID, including the latest commit on the main branch by default.
+    Args:
+        repo_id (int): The ID of the repository to view.
+    Returns:
+        JSON response containing the repository details and the latest commit on the main branch, or a 404 error if not found.
+    """
     repo = repositories.get(repo_id)
     if not repo:
         abort(404, description=f"Repository with ID {repo_id} not found.")
-    return jsonify(repo)
+
+    # Retrieve the latest commit hash on the main branch
+    latest_commit_hash = repo.get('branches', {}).get('main', [])[-1]
+    latest_commit = commits.get(latest_commit_hash, {})
+
+    # Add the latest commit data to the repository information
+    repo_info = {**repo, 'latest_commit': latest_commit}
+
+    return jsonify(repo_info)
 
 
 @app.route('/repositories/<int:repo_id>/branches', methods=['GET'])
 def list_branches(repo_id):
+    """
+    List all branches in a specific repository.
+    Args:
+        repo_id (int): The ID of the repository.
+    Returns:
+        JSON response containing a list of branches or a 404 error if the repository is not found.
+    """
     repo = repositories.get(repo_id)
     if not repo:
         abort(404, description=f"Repository with ID {repo_id} not found.")
@@ -85,16 +126,32 @@ def list_branches(repo_id):
 
 @app.route('/repositories/<int:repo_id>/tags', methods=['GET'])
 def list_tags(repo_id):
+    """
+    List all tags of a specified repository.
+    Args:
+        repo_id (int): The ID of the repository.
+    Returns:
+        JSON response containing a list of tags or a 404 error if the repository is not found.
+    """
     repo = repositories.get(repo_id)
     if not repo:
         abort(404, description=f"Repository with ID {repo_id} not found.")
     return jsonify(repo.get('tags', []))
 
+
 @app.route('/repositories/<int:repo_id>/commits', methods=['GET'])
 def list_all_commits(repo_id):
+    """
+    List all commits in a specific repository with pagination.
+    Args:
+        repo_id (int): The ID of the repository.
+    Returns:
+        Paginated JSON response containing commits or a 404 error if the repository is not found.
+    """
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 10, type=int)
 
+    # Retrieve the specified repository's commits; return 404 error if the repository is not found
     repo = repositories.get(repo_id)
     if not repo:
         abort(404, description=f"Repository with ID {repo_id} not found.")
@@ -104,8 +161,17 @@ def list_all_commits(repo_id):
 
     return jsonify(paginated_commits)
 
+
 @app.route('/repositories/<int:repo_id>/branches/<branch_name>/commits', methods=['GET'])
 def list_commits_on_branch(repo_id, branch_name):
+    """
+    List commits on a specific branch of a repository with pagination.
+    Args:
+        repo_id (int): The ID of the repository.
+        branch_name (str): The name of the branch.
+    Returns:
+        Paginated JSON response containing commits or a 404 error if the branch/repository is not found.
+    """
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 10, type=int)
 
@@ -124,6 +190,14 @@ def list_commits_on_branch(repo_id, branch_name):
 
 @app.route('/repositories/<int:repo_id>/commits/<commit_hash>', methods=['GET'])
 def view_specific_commit(repo_id, commit_hash):
+    """
+    View a specific commit.
+    Args:
+        repo_id (int): The ID of the repository.
+        commit_hash (str): The hash of the commit.
+    Returns:
+        JSON response containing commit details or a 404 error if the commit/repository is not found.
+    """
     commit = commits.get(commit_hash)
     if not commit:
         abort(404, description=f"Commit with hash {commit_hash} not found.")
@@ -134,6 +208,14 @@ def view_specific_commit(repo_id, commit_hash):
 
 @app.route('/repositories/<int:repo_id>/commits/<commit_hash>/tree', methods=['GET'])
 def view_repository_tree_for_commit(repo_id, commit_hash):
+    """
+    View the repository tree for a specific commit.
+    Args:
+        repo_id (int): The ID of the repository.
+        commit_hash (str): The hash of the commit.
+    Returns:
+        JSON response containing the commit tree or a 404 error if the commit/repository is not found.
+    """
     commit = commits.get(commit_hash)
     if not commit or commit['repo_id'] != repo_id:
         abort(404, description=f"Commit with hash {commit_hash} not found in repository {repo_id}.")
@@ -143,46 +225,60 @@ def view_repository_tree_for_commit(repo_id, commit_hash):
 
 @app.route('/repositories/<int:repo_id>/tree/<tree_hash>/<path:path>', methods=['GET'])
 def retrieve_file_or_directory_content(repo_id, tree_hash, path):
+    """
+    Retrieve file or directory content from a specific commit.
+    Args:
+        repo_id (int): The ID of the repository.
+        tree_hash (str): The hash of the tree.
+        path (str): The file or directory path.
+    Returns:
+        JSON response containing file or directory content, or a 404 error if the path/commit/repository is not found.
+    """
     commit = commits.get(tree_hash)
     if not commit or commit['repo_id'] != repo_id:
         abort(404, description=f"Commit with hash {tree_hash} not found in repository {repo_id}.")
 
-    # Normalize path
-    if not path.endswith('/'):
-        path += '/'
-
-    tree_entry = trees.get(tree_hash, {}).get(path)
-
-    if not tree_entry:
-        abort(404, description=f"Path '{path}' not found in commit {tree_hash}.")
-
-    if tree_entry['type'] == 'tree':
-        # Return directory contents
+    if path.endswith('/'):
+        # Handling directory content request
+        tree_entry = trees.get(tree_hash, {}).get(path)
         return jsonify({'type': 'tree', 'content': list(tree_entry['items'].keys())})
-    elif tree_entry['type'] == 'blob':
-        # Return file content
-        file_content = files.get(path.strip('/'))
-        if file_content is None:
-            abort(404, description=f"File '{path}' not found.")
-        return jsonify({'type': 'blob', 'content': file_content})
+
+    # Check if path is a file in the root directory
+    if '/' not in path and path in trees.get(tree_hash, {}).get('/', {}).get('items', {}):
+        file_content = files.get(path)
+        if file_content:
+            return jsonify({'type': 'blob', 'content': file_content})
+
+    # Split path into directory and filename
+    directory, _, filename = path.rpartition('/')
+    directory += '/' if directory else ''
+
+    # Check if the directory exists in the tree
+    tree_entry = trees.get(tree_hash, {}).get(directory)
+    if tree_entry and filename in tree_entry['items']:
+        # Handle file content for files in subdirectories
+        if tree_entry['items'][filename] == 'blob':
+            file_content = files.get(filename)
+            return jsonify({'type': 'blob', 'content': file_content})
+        elif tree_entry['items'][filename] == 'tree':
+            # Return directory contents
+            return jsonify({'type': 'tree', 'content': list(tree_entry['items'].keys())})
     else:
-        abort(500, description="Unexpected content type.")
-
-
-@app.route('/repositories/<int:repo_id>/branches/main/latest-commit', methods=['GET'])
-def view_latest_commit_on_main_branch(repo_id):
-    repo = repositories.get(repo_id)
-    if not repo or 'main' not in repo.get('branches', {}):
-        abort(404, description=f"Repository with ID {repo_id} does not have a 'main' branch.")
-    latest_commit_hash = repo['branches']['main']
-    latest_commit = commits.get(latest_commit_hash)
-    return jsonify(latest_commit)
+        # Path does not exist as a file or directory
+        abort(404, description=f"Path '{path}' not found in commit {tree_hash}.")
 
 
 # Issue Endpoints
-
 @app.route('/repositories/<int:repo_id>/issues', methods=['GET', 'POST'])
 def issues_operations(repo_id):
+    """
+    Perform operations (GET, POST) on issues of a repository.
+    Args:
+        repo_id (int): The ID of the repository.
+    Returns:
+        For GET: JSON response containing a list of issues or filtered by status.
+        For POST: JSON response containing the newly created issue.
+    """
     if request.method == 'GET':
         # Retrieve the optional status query parameter
         status_filter = request.args.get('status')
@@ -200,8 +296,8 @@ def issues_operations(repo_id):
     elif request.method == 'POST':
         new_issue_data = request.json
         # Validate new issue data
-        if 'description' not in new_issue_data or not isinstance(new_issue_data['description'], str):
-            abort(400, description="Invalid issue data: 'description' is required.")
+        if 'description' not in new_issue_data or not isinstance(new_issue_data['description'], str) or len(
+                new_issue_data) > 1: abort(400, description="Invalid issue data: only 'description' is required.")
 
         new_issue_id = str(uuid.uuid4())
         new_issue = {'id': new_issue_id, 'repo_id': repo_id, 'status': 'Open', **new_issue_data}
@@ -211,6 +307,15 @@ def issues_operations(repo_id):
 
 @app.route('/repositories/<int:repo_id>/issues/<int:issue_id>', methods=['GET', 'PUT'])
 def issue_operations(repo_id, issue_id):
+    """
+    Perform operations (GET, PUT) on a specific issue of a repository.
+    Args:
+        repo_id (int): The ID of the repository.
+        issue_id (int): The ID of the issue.
+    Returns:
+        For GET: JSON response containing issue details.
+        For PUT: JSON response containing the updated issue details.
+    """
     repo_issues = issues.get(repo_id, [])
     issue = next((issue for issue in repo_issues if issue['id'] == issue_id), None)
     if not issue:
@@ -235,6 +340,15 @@ def issue_operations(repo_id, issue_id):
 
 @app.route('/repositories/<int:repo_id>/issues/<int:issue_id>/comments', methods=['GET', 'POST'])
 def issue_comments(repo_id, issue_id):
+    """
+    Perform operations (GET, POST) on comments of a specific issue in a repository.
+    Args:
+        repo_id (int): The ID of the repository.
+        issue_id (int): The ID of the issue.
+    Returns:
+        For GET: JSON response containing a list of comments.
+        For POST: JSON response containing the newly added comment.
+    """
     repo_issues = issues.get(repo_id, [])
     issue = next((issue for issue in repo_issues if issue['id'] == issue_id), None)
     if not issue:
@@ -258,39 +372,42 @@ def issue_comments(repo_id, issue_id):
         issue.setdefault('comments', []).append(new_comment)
         return jsonify(new_comment), 201
 
-@app.route('/repositories/<int:repo_id>/issues/<int:issue_id>', methods=['PUT'])
-def update_issue_status(repo_id, issue_id):
-    repo_issues = issues.get(repo_id, [])
-    issue = next((issue for issue in repo_issues if issue['id'] == issue_id), None)
-    if not issue:
-        abort(404, description=f"Issue with ID {issue_id} not found in repository {repo_id}.")
-
-    issue_data = request.json
-    if 'status' not in issue_data or issue_data['status'] not in ['Open', 'Closed']:
-        abort(400, description="Invalid status provided.")
-
-    issue['status'] = issue_data['status']
-    return jsonify(issue)
 
 # Error Handling
 @app.errorhandler(404)
 def resource_not_found(e):
-    return jsonify(error=str(e)), 404
+    """
+    Error handler for 404 Not Found.
+    Args:
+        e (Exception): The exception that was raised.
+    Returns:
+        JSON response containing the error message.
+    """
+    return jsonify(error=f"{str(e.description)}"), 404
 
 
 @app.errorhandler(400)
 def bad_request(e):
+    """
+    Error handler for 400 Bad Request.
+    Args:
+        e (Exception): The exception that was raised.
+    Returns:
+        JSON response containing the error message.
+    """
     return jsonify(error=str(e)), 400
 
 
-@app.errorhandler(500)
-def internal_server_error(e):
-    return jsonify(error="Internal server error"), 500
-
 def paginate(data, page, per_page):
+    """
+    Paginate a list of data.
+    Args:
+        data (list): The data to be paginated.
+        page (int): The current page number.
+        per_page (int): The number of items per page.
+    Returns:
+        A slice of the data for the specified page.
+    """
     start = (page - 1) * per_page
     end = start + per_page
     return data[start:end]
-
-if __name__ == '__main__':
-    app.run(debug=True)
