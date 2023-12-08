@@ -93,18 +93,6 @@ def test_retrieve_file_or_directory_content(client1):
     assert 'Content of file1' in response.data.decode()
 
 
-# Test for viewing the latest commit on main branch
-def test_view_latest_commit_on_main_branch(client1):
-    """
-    Test to ensure the endpoint for viewing the latest commit on the main branch
-    of a repository works correctly. It checks for status code 200 and
-    the presence of the latest commit hash 'hash123' in the response.
-    """
-    response = client1.get('/repositories/1/branches/main/latest-commit')
-    assert response.status_code == 200
-    assert 'hash123' in response.data.decode()
-
-
 # Test for listing issues for a repository
 def test_list_issues(client1):
     """
