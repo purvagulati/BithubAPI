@@ -38,9 +38,47 @@ files = {
 
 issues = {
     # Sample issues for tracking in repositories
-    1: [{'id': 1, 'description': 'Issue 1 in Repo 1', 'status': 'Open', 'comments': []}],
-    2: [{'id': 2, 'description': 'Issue 1 in Repo 2', 'status': 'Open', 'comments': []}]
+    1: [
+        {
+            'id': 1,
+            'description': 'Issue 1 in Repo 1',
+            'status': 'Open',
+            'comments': [
+                {
+                    'id': 101,
+                    'issue_id': 1,
+                    'text': 'This is the first comment on issue 1.',
+                    'submitter_id': 'user123',
+                    'date': '2023-01-01'
+                },
+                {
+                    'id': 102,
+                    'issue_id': 1,
+                    'text': 'This is the second comment on issue 1.',
+                    'submitter_id': 'user456',
+                    'date': '2023-01-02'
+                }
+            ]
+        }
+    ],
+    2: [
+        {
+            'id': 2,
+            'description': 'Issue 1 in Repo 2',
+            'status': 'Open',
+            'comments': [
+                {
+                    'id': 201,
+                    'issue_id': 2,
+                    'text': 'This is the first comment on issue 2.',
+                    'submitter_id': 'user789',
+                    'date': '2023-01-03'
+                }
+            ]
+        }
+    ]
 }
+
 
 comments = {
     # Sample comments associated with issues
