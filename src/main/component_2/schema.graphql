@@ -43,8 +43,9 @@ type ChangedLine {
 
 type Comment {
   id: ID!
+  userId: ID!
   content: String!
-  reactions: [UserReaction] # Updated to reflect new structure
+  reactions: [UserReaction] 
   reactionCounts: [ReactionCount] 
 }
 
@@ -80,13 +81,16 @@ input UserInput {
   id: ID!
 }
 
+input AddReactionInput {
+  id: ID!
+  userId: ID! 
+  reaction: String!
+}
+
 input AddCommentInput {
   pullRequestId: ID!
   content: String!
   lineNumber: Int
+  userId: ID!
 }
 
-input AddReactionInput {
-  commentId: ID!
-  reaction: String!
-}

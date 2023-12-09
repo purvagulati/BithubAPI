@@ -38,22 +38,59 @@ const {
  }
  
  function addCommentToPullRequest(input) {
+    const { pullRequestId, userId, content, lineNumber } = input;
+    
+    // Check if the pull request exists
+    const pullRequest = findPullRequestById(pullRequestId);
+    if (!pullRequest) {
+       return { error: 'Pull request not found' };
+    }
+    // Create a new comment with the userId
     const newComment = {
        id: `comment-${Date.now()}`,
-       ...input
+       userId, // include the userId in the comment
+       content,
+       lineNumber,
     };
     comments.push(newComment);
     return newComment;
  }
  
  function addReactionToComment(commentId, userId, reaction) {
-    const comment = comments.find(c => c.id === commentId);
-    if (!comment) return null;
-    comment.reactions[userId] = reaction;
-    return comment;
-  }
+    console.log(`addReactionToComment called with commentId: ${commentId}, userId: ${userId}, reaction: ${reaction}`);
 
- 
+    // Find the comment by its ID
+    const comment = comments.find(c => c.id === commentId);
+    if (!comment) {
+        console.error(`Comment with ID ${commentId} not found`);
+        throw new Error(`Comment with ID ${commentId} not found`);
+    }
+    console.log(`Found comment: ${JSON.stringify(comment)}`);
+
+    // Initialize the reactions object if it doesn't exist
+    if (!comment.reactions) {
+        comment.reactions = {};
+        console.log(`Initialized reactions object for commentId: ${commentId}`);
+    }
+
+    // Check for existing reaction from the same user
+    if (comment.reactions[userId]) {
+        throw new Error(`User ${userId} already reacted with ${comment.reactions[userId]}. Updating reaction.`);
+    }
+
+    // Add or update the user's reaction to the comment
+    comment.reactions[userId] = reaction;
+    console.log(`Updated reactions for commentId: ${commentId}: ${JSON.stringify(comment.reactions)}`);
+
+    // Calculate the updated reaction counts
+    comment.reactionCounts = calculateReactionCounts(comment.reactions);
+    console.log(`Updated reaction counts for commentId: ${commentId}: ${JSON.stringify(comment.reactionCounts)}`);
+
+    // Return the updated comment
+    console.log(`Returning updated comment for commentId: ${commentId}`);
+    return comment;
+}
+  
   function calculateReactionCounts(reactions) {
     const reactionCounts = {};
   
@@ -66,7 +103,7 @@ const {
     return Object.entries(reactionCounts).map(([reaction, count]) => ({ reaction, count }));
   }
   
-  
+ 
  
  function mergePullRequest(id) {
     const pullRequest = findPullRequestById(id);
