@@ -130,9 +130,23 @@ def test_chatgpt_for_code_error(stub):
 def test_virtual_pair_programming(stub):
     
     request_iterator = iter([
-        bithub_service_pb2.PairProgrammingRequest(repository_id=200)
+        bithub_service_pb2.PairProgrammingRequest(
+            repository_id=200, 
+            issue_description="Application crashes on startup"
+        )
         # Add other necessary fields
     ])
     responses = list(stub.VirtualPairProgramming(request_iterator))
     assert len(responses) == 1  # or more, depending on your test setup
     assert responses[0].plain_english_description == "Fixed a syntax error in src/app.py"
+
+
+def test_virtual_pair_programming_not_found(stub):
+    request_iterator = iter([
+        bithub_service_pb2.PairProgrammingRequest(
+            repository_id=999, # Non-existing ID
+            issue_description="...." # Unclear issue description
+        )  
+    ])
+    responses = list(stub.VirtualPairProgramming(request_iterator))
+    assert len(responses) == 0  # No response expected for non-existing ID
