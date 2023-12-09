@@ -1,15 +1,16 @@
 type Query {
-  pullRequestById(id: ID!): PullRequest
-  pullRequests(filters: PullRequestFilter): [PullRequest]
-  commentsByPullRequest(pullRequestId: ID!): [Comment]
+  pullRequestById(id: ID!): PullRequest # Fetch a single pull request by its ID
+  pullRequests(filters: PullRequestFilter): [PullRequest] # Retrieve multiple pull requests based on specified filters
+  commentsByPullRequest(pullRequestId: ID!): [Comment] # Get all comments associated with a specific pull request
 }
 
 type Mutation {
-  createPullRequest(input: CreatePullRequestInput!): PullRequest
-  addCommentToPullRequest(input: AddCommentInput!): Comment
-  addReactionToComment(input: AddReactionInput!): Comment
-  mergePullRequest(id: ID!): PullRequest
-  rejectPullRequest(id: ID!): PullRequest
+  createPullRequest(input: CreatePullRequestInput!): PullRequest # Create a new pull request
+  addCommentToPullRequest(input: AddCommentInput!): Comment # Add a comment to a pull request
+  addReactionToComment(input: AddReactionInput!): Comment # Add a reaction to a specific comment
+  removeReactionFromComment(input: RemoveReactionInput!): Comment # Remove a reaction from a comment
+  mergePullRequest(id: ID!): PullRequest # Merge a specified pull request
+  rejectPullRequest(id: ID!): PullRequest # Reject a specified pull request
 }
 
 type PullRequest {
@@ -18,12 +19,13 @@ type PullRequest {
   createdAt: String!
   description: String!
   sourceCommit: String!
+  commits: String
   targetBranch: String!
   status: String!
   statusMessage: String!
-  user: User!
-  comments: [Comment]
-  fileChanges: [FileChange]
+  user: User! # The user who created the pull request
+  comments: [Comment] # Comments on the pull request
+  fileChanges: [FileChange] # Files changed in the pull request
 }
 
 type FileChange {
@@ -31,31 +33,33 @@ type FileChange {
   fileName: String!
   changes: String!
   changedLines: [ChangedLine]
-  # fullContent: [String] # Added to represent the full file content
 }
 
 type ChangedLine {
-  line: Int!
-  code: String!
-  type: String! # '+' for additions, '-' for deletions
-  comments: [Comment]
+  line: Int! # Line number in the file
+  code: String! # Code content of the line
+  type: String! # Type of change: '+' for additions, '-' for deletions
+  comments: [Comment] # Comments associated with the line
 }
 
 type Comment {
   id: ID!
+  userId: ID!
   content: String!
-  reactions: [UserReaction] # Updated to reflect new structure
-  reactionCounts: [ReactionCount] 
+  reactions: [UserReaction] # Reactions to the comment
+  reactionCounts: [ReactionCount] # Aggregated count of reactions
+  pullRequestId: ID!
+  lineNumber: Int
 }
 
 type UserReaction {
   userId: ID!
-  reaction: String!
+  reaction: String! # Type of reaction (like, dislike, etc.)
 }
 
 type ReactionCount {
   reaction: String!
-  count: Int!
+  count: Int! # Number of times this reaction was made
 }
 
 type User {
@@ -65,7 +69,7 @@ type User {
 }
 
 input PullRequestFilter {
-  status: String
+  status: String # Filter pull requests by their status (open, closed, etc.)
 }
 
 input CreatePullRequestInput {
@@ -73,20 +77,29 @@ input CreatePullRequestInput {
   description: String!
   sourceCommit: String!
   targetBranch: String!
-  user: UserInput!
+  user: UserInput! # Information about the user creating the pull request
 }
 
 input UserInput {
   id: ID!
+  name: String!
+  email: String!
+}
+
+input AddReactionInput {
+  id: ID!
+  userId: ID!
+  reaction: String! # Type of reaction to be added
 }
 
 input AddCommentInput {
   pullRequestId: ID!
   content: String!
-  lineNumber: Int
+  lineNumber: Int # Optional line number for inline comments
+  userId: ID!
 }
 
-input AddReactionInput {
+input RemoveReactionInput {
   commentId: ID!
-  reaction: String!
+  userId: ID! # User ID to identify who is removing the reaction
 }
