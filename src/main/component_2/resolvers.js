@@ -1,8 +1,20 @@
 // Importing the pullRequestService module to use its functions.
 const dbService = require('./pullRequestService');
 
+// Helper function to transform comments
+function transformComments(comments) {
+   return comments.map(comment => ({
+      ...comment,
+      // Transforming reactions object into an array.
+      reactions: comment.reactions ? Object.entries(comment.reactions).map(([userId, reaction]) => ({
+         userId,
+         reaction
+      })) : []
+   }));
+}
+
 const resolvers = {
-   // Query resolvers handle fetching data.
+   // Queries
    Query: {
       // Resolver for fetching a single pull request by its ID.
       pullRequestById: (_, {
@@ -10,15 +22,15 @@ const resolvers = {
       }) => {
          const pullRequest = dbService.findPullRequestById(id);
          if (pullRequest) {
-            // Augmenting the pull request with its comments.
-            pullRequest.comments = dbService.getCommentsByPullRequestId(pullRequest.id).map(comment => ({
-               ...comment,
-               // Transforming reactions object into an array.
-               reactions: comment.reactions ? Object.entries(comment.reactions).map(([userId, reaction]) => ({
-                  userId,
-                  reaction
-               })) : []
-            }));
+            // Augmenting the pull request with its comments using transformComments function.
+            pullRequest.comments = transformComments(dbService.getCommentsByPullRequestId(pullRequest.id));
+
+            pullRequest.fileChanges.forEach(fileChange => {
+              fileChange.changedLines.forEach(changedLine => {
+                 changedLine.comments = transformComments(dbService.getCommentsBychangedLines(changedLine.line));
+              });
+           });
+           
          }
          return pullRequest;
       },
@@ -26,15 +38,10 @@ const resolvers = {
       pullRequests: (_, args) => {
          const pullRequests = dbService.getPullRequests(args.filters);
          pullRequests.forEach(pr => {
-            // Augmenting each pull request with its comments.
-            pr.comments = dbService.getCommentsByPullRequestId(pr.id).map(comment => ({
-               ...comment,
-               // Transforming reactions object into an array.
-               reactions: comment.reactions ? Object.entries(comment.reactions).map(([userId, reaction]) => ({
-                  userId,
-                  reaction
-               })) : []
-            }));
+            // Augmenting each pull request with its comments using transformComments function.
+            pr.comments = transformComments(dbService.getCommentsByPullRequestId(pr.id));
+
+            
          });
          return pullRequests;
       },
@@ -43,22 +50,17 @@ const resolvers = {
          pullRequestId
       }) => {
          const comments = dbService.getCommentsByPullRequestId(pullRequestId);
-         return comments.map(comment => ({
-            ...comment,
-            // Transforming reactions object into an array.
-            reactions: Object.entries(comment.reactions).map(([userId, reaction]) => ({
-               userId,
-               reaction
-            }))
-         }));
+         return transformComments(comments);
       }
    },
-   // Mutation resolvers handle data modification.
+
+   // Mutations
    Mutation: {
       // Resolver to create a new pull request.
       createPullRequest: (_, {
          input
       }) => dbService.createPullRequest(input),
+
       // Resolver to add a new comment to a pull request.
       addCommentToPullRequest: (_, {
          input
@@ -67,8 +69,11 @@ const resolvers = {
          if (result.error) {
             throw new Error(result.error); // Error handling for comment creation failure.
          }
+         // Transform the added comment's reactions
+         result.comments = transformComments(result.comments);
          return result;
       },
+
       // Resolver to add a reaction to a comment.
       addReactionToComment: (_, {
          input
@@ -84,6 +89,7 @@ const resolvers = {
             throw new Error(error.message); // Error handling for reaction addition failure.
          }
       },
+
       // Resolver to remove a reaction from a comment.
       removeReactionFromComment: (_, {
          input
@@ -103,10 +109,12 @@ const resolvers = {
             throw new Error(error.message); // Error handling for reaction removal failure.
          }
       },
+
       // Resolver to merge a pull request.
       mergePullRequest: (_, {
          id
       }) => dbService.mergePullRequest(id),
+
       // Resolver to reject a pull request.
       rejectPullRequest: (_, {
          id
@@ -114,5 +122,4 @@ const resolvers = {
    },
 };
 
-// Exporting the resolvers for use in the GraphQL server.
 module.exports = resolvers;

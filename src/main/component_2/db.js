@@ -7,11 +7,12 @@ const pullRequests = [
     title: 'Fix login issue',
     description: 'This pull request fixes the login issue reported in issue #54321.',
     sourceCommit: '123abc',
+    commits: 'blackbox tests,whitebox test',
     createdAt: '2023-12-09T09:08:27.997Z',
     targetBranch: 'main',
     status: 'pending',
     statusMessage: 'Pull request is open',
-    user: { id: 'user-1', name: 'Alice', email: 'alice@example.com' },
+    user: { id: 'user-1', name: 'Alice', email: 'alice@cmu.andrew.edu' },
     comments: [],
     fileChanges: [
       { 
@@ -28,8 +29,15 @@ const pullRequests = [
         fileName: 'README.md', 
         changes: 'Updated installation instructions and contact information',
         changedLines: [
-          { line: 10, code: "Run `npm install` to install all dependencies.", type: '+', comments: [] },
-          { line: 25, code: "For support, contact support@example.com.", type: '+', comments: [] }
+          { line: 10, code: "Run `npm install` to install all dependencies.", type: '+', comments: [{
+            id: 'comment-38', 
+            userId: 'user-3', 
+            content: 'This line needs refactoring.', 
+            lineNumber: 10,
+            reactions: {'user-1': '👍'}, 
+            pullRequestId: 'pr-12345', 
+          }] },
+          { line: 25, code: "For support, contact xyz@andrew.cmu.edu.", type: '+' }
         ]
       },
     ],
@@ -51,8 +59,15 @@ const pullRequests = [
         fileName: 'login.js', 
         changes: 'Added null check for user credentials and updated login logic',
         changedLines: [
-          { line: 55, code: "if (userCredentials != null) {", type: '+', comments: [] },
-          { line: 56, code: "   performLogin(userCredentials);", type: '+', comments: [] }
+          { line: 55, code: "if (userCredentials != incorrect) {", type: '+', comments: [{
+            id: 'comment-33', 
+            userId: 'user-3', 
+            content: 'This line needs refactoring.', 
+            lineNumber: 55,
+            reactions: {}, 
+            pullRequestId: 'pr-12345', 
+          }]  },
+          { line: 56, code: "performLogin(userCredentials);", type: '+' }
         ]
       },
     ]
@@ -83,6 +98,22 @@ const comments = [
     lineNumber: null,
     reactions: { 'user-1': '👍', 'user-2': '😭' },
     pullRequestId: 'pr-67890',
+  },
+  {
+    id: 'comment-38', 
+    userId: 'user-3', 
+    content: 'This line needs refactoring.', 
+    lineNumber: 10,
+    reactions: {'user-1': '👍'}, 
+    pullRequestId: 'pr-12345', 
+  },
+  {
+    id: 'comment-45', 
+    userId: 'user-3', 
+    content: 'This line needs refactoring.', 
+    lineNumber: 25,
+    reactions: {'user-19': '👍'}, 
+    pullRequestId: 'pr-12345', 
   }
 ];
 

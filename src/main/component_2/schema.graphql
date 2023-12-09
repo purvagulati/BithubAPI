@@ -19,6 +19,7 @@ type PullRequest {
   createdAt: String!
   description: String!
   sourceCommit: String!
+  commits: String
   targetBranch: String!
   status: String!
   statusMessage: String!
@@ -32,7 +33,6 @@ type FileChange {
   fileName: String!
   changes: String!
   changedLines: [ChangedLine]
-  # fullContent: [String] # Represents the full content of the file after changes
 }
 
 type ChangedLine {
@@ -48,6 +48,8 @@ type Comment {
   content: String!
   reactions: [UserReaction] # Reactions to the comment
   reactionCounts: [ReactionCount] # Aggregated count of reactions
+  pullRequestId: ID!
+  lineNumber: Int
 }
 
 type UserReaction {
@@ -80,6 +82,8 @@ input CreatePullRequestInput {
 
 input UserInput {
   id: ID!
+  name: String!
+  email: String!
 }
 
 input AddReactionInput {

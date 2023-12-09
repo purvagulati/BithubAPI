@@ -27,6 +27,16 @@ const {
           reactionCounts: calculateReactionCounts(comment.reactions)
        }));
  }
+
+ function getCommentsBychangedLines(lineNumber) {
+    return comments
+       .filter(comment => comment.lineNumber === lineNumber)
+       .map(comment => ({
+          ...comment,
+          reactionCounts: calculateReactionCounts(comment.reactions)
+       }));
+ }
+
  
  // Creates a new pull request and adds it to the database.
  function createPullRequest(input) {
@@ -150,6 +160,7 @@ const {
     pullRequest.status = 'rejected';
     return pullRequest;
  }
+
  
  // Exporting the functions to make them available for other modules.
  module.exports = {
@@ -162,4 +173,5 @@ const {
     removeReactionFromComment,
     mergePullRequest,
     rejectPullRequest,
+    getCommentsBychangedLines,
  };
