@@ -214,7 +214,7 @@
 ```
 - Screenshot:
 ![Output](../images/component1/listIssuesForARepository.png)
--   Satisfies Requirement: Listing repository issues with pagination and filtering by status.
+-   Satisfies Requirement: Listing repository issues.
 
 
 ### Testing "Report a New Issue"
@@ -312,7 +312,7 @@ localhost:5000/repositories/1/issues?page=1&per_page=5&status=Open
 ```
 - Screenshot:
 ![Output](../images/component1/paginationAndFiltering.png)
--   Satisfies Requirement: Efficient browsing and specific viewing of issues.
+-   Satisfies Requirement: Efficient browsing and specific viewing of issues with pagination and filtering
 
 ### Testing Update Issue Status
 
