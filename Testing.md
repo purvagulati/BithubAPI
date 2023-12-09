@@ -38,7 +38,7 @@
 ]
 ```
 - Screenshot:
-![Output](./src/main/images/component1/pic.png)
+![Output](./src/main/images/component1/listAllRepos.png)
 -   Satisfies Requirement: View repositories on Bithub.
 
 ### Testing "View Specific Repository"
@@ -66,7 +66,7 @@
 }
 ```
 - Screenshot:
-![Output](./src/main/images/component1/pic.png)
+![Output](./src/main/images/component1/viewSpecificRepo.png)
 -   Satisfies Requirement: Default view of the latest commit on the main branch.
 
 ### Testing "List Branches in a Repository"
@@ -80,7 +80,7 @@
 ]
 ```
 - Screenshot:
-![Output](./src/main/images/component1/pic.png)
+![Output](./src/main/images/component1/listBranchesInARepo.png)
 -   Satisfies Requirement: Listing all branches.
 
 ### Testing "List Tags in a Repository"
@@ -94,7 +94,7 @@
 ]
 ```
 - Screenshot:
-![Output](./src/main/images/component1/pic.png)
+![Output](./src/main/images/component1/listTagsInARepo.png)
 -   Satisfies Requirement: Listing all tags.
 
 ### Testing "List Commits on a Branch"
@@ -112,7 +112,7 @@
 ]
 ```
 - Screenshot:
-![Output](./src/main/images/component1/pic.png)
+![Output](./src/main/images/component1/listCommitsOnABranch.png)
 -   Satisfies Requirement: Listing commits on a selected branch.
 
 ### Testing "View Specific Commit"
@@ -128,7 +128,7 @@
 }
 ```
 - Screenshot:
-![Output](./src/main/images/component1/pic.png)
+![Output](./src/main/images/component1/viewSpecficCommit.png)
 -   Satisfies Requirement: Rendering an arbitrary commit.
 
 ### Testing "View Repository Tree for a Commit"
@@ -161,7 +161,7 @@
 }
 ```
 - Screenshot:
-![Output](./src/main/images/component1/pic.png)
+![Output](./src/main/images/component1/viewRepoTreeForCommit.png)
 -   Satisfies Requirement: Displaying the top-level tree.
 
 ### Testing "Retrieve File or Directory Content"
@@ -178,7 +178,7 @@
 }
 ```
 - Screenshot:
-![Output](./src/main/images/component1/pic.png)
+![Output](./src/main/images/component1/retrieveFileOrDirectoryContent.png)
 -   Satisfies Requirement: Retrieval of blobs and sub-trees.
 
 
@@ -205,25 +205,15 @@
 				"submitter_id": "user456",
 				"text": "This is the second comment on issue 1."
 			},
-			{
-				"id": "b5ed7367-a236-476d-889e-8ce154ffaf1f",
-				"text": "Hi I'm a comment"
-			}
 		],
 		"description": "Issue 1 in Repo 1",
 		"id": 1,
-		"status": "Closed"
-	},
-	{
-		"description": "This is a test issue description",
-		"id": "a28b9520-471e-42dc-98b6-1eca6c341f18",
-		"repo_id": 1,
 		"status": "Open"
 	}
 ]
 ```
 - Screenshot:
-![Output](./src/main/images/component1/pic.png)
+![Output](./src/main/images/component1/listIssuesForARepository.png)
 -   Satisfies Requirement: Listing repository issues with pagination and filtering by status.
 
 
@@ -241,7 +231,7 @@
 }
 ```
 - Screenshot:
-![Output](./src/main/images/component1/pic.png)
+![Output](./src/main/images/component1/reportANewIssue.png)
 -   Satisfies Requirement: Reporting an issue.
 
 ### Testing "View a Specific Issue"
@@ -277,7 +267,7 @@
 }
 ```
 - Screenshot:
-![Output](./src/main/images/component1/pic.png)
+![Output](./src/main/images/component1/viewASpecificIssue.png)
 -   Satisfies Requirement: Viewing an issue with details and comments.
 
 
@@ -294,7 +284,7 @@
 }
 ```
 - Screenshot:
-![Output](./src/main/images/component1/pic.png)
+![Output](./src/main/images/component1/submitANewComment.png)
 -   Satisfies Requirement: Submitting new comments.
 
 ### Testing Pagination and Filtering
@@ -321,7 +311,7 @@ localhost:5000/repositories/1/issues?page=1&per_page=5&status=Open
 ]
 ```
 - Screenshot:
-![Output](./src/main/images/component1/pic.png)
+![Output](./src/main/images/component1/paginationAndFiltering.png)
 -   Satisfies Requirement: Efficient browsing and specific viewing of issues.
 
 ### Testing Update Issue Status
@@ -361,5 +351,5 @@ localhost:5000/repositories/1/issues?page=1&per_page=5&status=Open
 }
 ```
 - Screenshot:
-![Output](./src/main/images/component1/pic.png)
+![Output](./src/main/images/component1/updateIssueStatus.png)
 -   Satisfies Requirement: Ability to update issue statuses.
