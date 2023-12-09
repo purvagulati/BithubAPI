@@ -1,5 +1,5 @@
 // db.js
-// Mock database for demonstration purposes
+// Mock database for GraphQL Manual Testing
 
 const pullRequests = [
   {

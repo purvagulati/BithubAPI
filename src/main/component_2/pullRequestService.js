@@ -1,30 +1,34 @@
 // pullRequestService.js
-// Service layer for handling database operations
+// Service layer for handling database operations related to pull requests and comments.
 
 const {
     pullRequests,
     comments
  } = require('./db');
  
+ // Finds a pull request by its unique ID.
  function findPullRequestById(id) {
     return pullRequests.find(pr => pr.id === id);
  }
  
+ // Retrieves pull requests based on provided filters.
  function getPullRequests(filters = {}) {
     return pullRequests.filter(pr => {
        return Object.entries(filters).every(([key, value]) => pr[key] === value);
     });
  }
  
+ // Fetches comments associated with a specific pull request.
  function getCommentsByPullRequestId(prId) {
     return comments
-      .filter(comment => comment.pullRequestId === prId)
-      .map(comment => ({
-        ...comment,
-        reactionCounts: calculateReactionCounts(comment.reactions)
-      }));
-  }
-
+       .filter(comment => comment.pullRequestId === prId)
+       .map(comment => ({
+          ...comment,
+          reactionCounts: calculateReactionCounts(comment.reactions)
+       }));
+ }
+ 
+ // Creates a new pull request and adds it to the database.
  function createPullRequest(input) {
     const newPullRequest = {
        id: `pr-${Date.now()}`,
@@ -37,18 +41,25 @@ const {
     return newPullRequest;
  }
  
+ // Adds a new comment to a specific pull request.
  function addCommentToPullRequest(input) {
-    const { pullRequestId, userId, content, lineNumber } = input;
-    
-    // Check if the pull request exists
+    const {
+       pullRequestId,
+       userId,
+       content,
+       lineNumber
+    } = input;
+ 
     const pullRequest = findPullRequestById(pullRequestId);
     if (!pullRequest) {
-       return { error: 'Pull request not found' };
+       return {
+          error: 'Pull request not found'
+       };
     }
-    // Create a new comment with the userId
+ 
     const newComment = {
        id: `comment-${Date.now()}`,
-       userId, // include the userId in the comment
+       userId,
        content,
        lineNumber,
     };
@@ -56,81 +67,60 @@ const {
     return newComment;
  }
  
+ // Adds a reaction to a specific comment.
  function addReactionToComment(commentId, userId, reaction) {
-    console.log(`addReactionToComment called with commentId: ${commentId}, userId: ${userId}, reaction: ${reaction}`);
-
-    // Find the comment by its ID
     const comment = comments.find(c => c.id === commentId);
     if (!comment) {
-        console.error(`Comment with ID ${commentId} not found`);
-        throw new Error(`Comment with ID ${commentId} not found`);
+       throw new Error(`Comment with ID ${commentId} not found`);
     }
-    console.log(`Found comment: ${JSON.stringify(comment)}`);
-
-    // Initialize the reactions object if it doesn't exist
+ 
     if (!comment.reactions) {
-        comment.reactions = {};
-        console.log(`Initialized reactions object for commentId: ${commentId}`);
+       comment.reactions = {};
     }
-
-    // Check for existing reaction from the same user
+ 
     if (comment.reactions[userId]) {
-        throw new Error(`User ${userId} already reacted with ${comment.reactions[userId]}. Updating reaction.`);
+       throw new Error(`User ${userId} already reacted with ${comment.reactions[userId]}.`);
     }
-
-    // Add or update the user's reaction to the comment
+ 
     comment.reactions[userId] = reaction;
-    console.log(`Updated reactions for commentId: ${commentId}: ${JSON.stringify(comment.reactions)}`);
-
-    // Calculate the updated reaction counts
+ 
     comment.reactionCounts = calculateReactionCounts(comment.reactions);
-    console.log(`Updated reaction counts for commentId: ${commentId}: ${JSON.stringify(comment.reactionCounts)}`);
-
-    // Return the updated comment
-    console.log(`Returning updated comment for commentId: ${commentId}`);
+ 
     return comment;
-}
-
-function removeReactionFromComment(commentId, userId) {
-    // Find the comment by its ID
+ }
+ 
+ // Removes a reaction from a comment.
+ function removeReactionFromComment(commentId, userId) {
     const comment = comments.find(c => c.id === commentId);
     if (!comment) {
-        console.error(`Comment with ID ${commentId} not found`);
-        throw new Error(`Comment with ID ${commentId} not found`);
+       throw new Error(`Comment with ID ${commentId} not found`);
     }
-
-    // Check if the user has reacted to the comment
+ 
     if (!comment.reactions || !comment.reactions[userId]) {
-        console.error(`No reaction from user ${userId} on comment ${commentId}`);
-        throw new Error(`No reaction from user ${userId} on comment ${commentId}`);
+       throw new Error(`No reaction from user ${userId} on comment ${commentId}`);
     }
-
-    // Remove the user's reaction
+ 
     delete comment.reactions[userId];
-    console.log(`Removed reaction from user ${userId} on comment ${commentId}`);
-
-    // Recalculate the reaction counts
+ 
     comment.reactionCounts = calculateReactionCounts(comment.reactions);
-    console.log(`Updated reaction counts for commentId: ${commentId}: ${JSON.stringify(comment.reactionCounts)}`);
-
-    // Return the updated comment
+ 
     return comment;
-}
-  
-  function calculateReactionCounts(reactions) {
+ }
+ 
+ // Calculates the counts of different types of reactions for a comment.
+ function calculateReactionCounts(reactions) {
     const reactionCounts = {};
-  
-    // Iterate over the object of reactions
     for (const userId in reactions) {
-      const reaction = reactions[userId];
-      reactionCounts[reaction] = (reactionCounts[reaction] || 0) + 1;
+       const reaction = reactions[userId];
+       reactionCounts[reaction] = (reactionCounts[reaction] || 0) + 1;
     }
-  
-    return Object.entries(reactionCounts).map(([reaction, count]) => ({ reaction, count }));
-  }
-  
+    return Object.entries(reactionCounts).map(([reaction, count]) => ({
+       reaction,
+       count
+    }));
+ }
  
- 
+ // Merges a specified pull request if it meets the criteria.
  function mergePullRequest(id) {
     const pullRequest = findPullRequestById(id);
     if (!pullRequest) return {
@@ -138,20 +128,18 @@ function removeReactionFromComment(commentId, userId) {
        pullRequest: null
     };
  
-    // Check if the sourceCommit starts with zero
     if (pullRequest.sourceCommit.startsWith('0')) {
        pullRequest.status = 'merge conflict';
        pullRequest.statusMessage = 'This branch has conflicts that must be resolved';
-       // Returning the pullRequest object with a conflict message
        return pullRequest;
     }
  
     pullRequest.status = 'merged';
     pullRequest.statusMessage = 'Pull request successfully merged';
     return pullRequest;
- 
  }
  
+ // Marks a pull request as rejected.
  function rejectPullRequest(id) {
     const pullRequest = findPullRequestById(id);
     if (!pullRequest) return {
@@ -163,6 +151,7 @@ function removeReactionFromComment(commentId, userId) {
     return pullRequest;
  }
  
+ // Exporting the functions to make them available for other modules.
  module.exports = {
     findPullRequestById,
     getPullRequests,
