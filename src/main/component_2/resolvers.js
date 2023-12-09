@@ -51,6 +51,19 @@ const resolvers = {
         throw new Error(error.message);
       }
     },
+    removeReactionFromComment: (_, { input }) => {
+      try {
+        const { commentId, userId } = input;
+        const updatedComment = dbService.removeReactionFromComment(commentId, userId);
+        updatedComment.reactions = Object.entries(updatedComment.reactions).map(([userId, reaction]) => ({
+          userId,
+          reaction
+        }));
+        return updatedComment;
+      } catch (error) {
+        throw new Error(error.message);
+      }
+    },
     mergePullRequest: (_, { id }) => dbService.mergePullRequest(id),
     rejectPullRequest: (_, { id }) => dbService.rejectPullRequest(id),
   },

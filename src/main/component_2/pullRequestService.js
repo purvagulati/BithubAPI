@@ -90,6 +90,32 @@ const {
     console.log(`Returning updated comment for commentId: ${commentId}`);
     return comment;
 }
+
+function removeReactionFromComment(commentId, userId) {
+    // Find the comment by its ID
+    const comment = comments.find(c => c.id === commentId);
+    if (!comment) {
+        console.error(`Comment with ID ${commentId} not found`);
+        throw new Error(`Comment with ID ${commentId} not found`);
+    }
+
+    // Check if the user has reacted to the comment
+    if (!comment.reactions || !comment.reactions[userId]) {
+        console.error(`No reaction from user ${userId} on comment ${commentId}`);
+        throw new Error(`No reaction from user ${userId} on comment ${commentId}`);
+    }
+
+    // Remove the user's reaction
+    delete comment.reactions[userId];
+    console.log(`Removed reaction from user ${userId} on comment ${commentId}`);
+
+    // Recalculate the reaction counts
+    comment.reactionCounts = calculateReactionCounts(comment.reactions);
+    console.log(`Updated reaction counts for commentId: ${commentId}: ${JSON.stringify(comment.reactionCounts)}`);
+
+    // Return the updated comment
+    return comment;
+}
   
   function calculateReactionCounts(reactions) {
     const reactionCounts = {};
@@ -144,6 +170,7 @@ const {
     createPullRequest,
     addCommentToPullRequest,
     addReactionToComment,
+    removeReactionFromComment,
     mergePullRequest,
     rejectPullRequest,
  };

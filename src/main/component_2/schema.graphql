@@ -8,6 +8,7 @@ type Mutation {
   createPullRequest(input: CreatePullRequestInput!): PullRequest
   addCommentToPullRequest(input: AddCommentInput!): Comment
   addReactionToComment(input: AddReactionInput!): Comment
+  removeReactionFromComment(input: RemoveReactionInput!): Comment
   mergePullRequest(id: ID!): PullRequest
   rejectPullRequest(id: ID!): PullRequest
 }
@@ -91,6 +92,11 @@ input AddCommentInput {
   pullRequestId: ID!
   content: String!
   lineNumber: Int
+  userId: ID!
+}
+
+input RemoveReactionInput {
+  commentId: ID!
   userId: ID!
 }
 
