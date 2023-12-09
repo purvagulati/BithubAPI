@@ -1,70 +1,77 @@
 // db.js
 // Mock database for demonstration purposes
 
-const pullRequests = []; // Array to store pull requests
-const comments = []; // Array to store comments
+const pullRequests = [
+  {
+    id: 'pr-12345',
+    title: 'Fix login issue',
+    description: 'This pull request fixes the login issue reported in issue #54321.',
+    sourceCommit: '123abc',
+    createdAt: '2023-12-09T09:08:27.997Z',
+    targetBranch: 'main',
+    status: 'pending',
+    statusMessage: 'Pull request is open',
+    user: { id: 'user-1', name: 'Alice', email: 'alice@example.com' },
+    comments: [],
+    fileChanges: [
+      { 
+        id: 'fileChange-1', 
+        fileName: 'login.js', 
+        changes: 'Added null check for user credentials and updated login logic',
+        changedLines: [
+          { line: 55, code: "if (userCredentials != null) {", type: '+', comments: [] },
+          { line: 56, code: "   performLogin(userCredentials);", type: '+', comments: [] }
+        ]
+      },
+      { 
+        id: 'fileChange-2', 
+        fileName: 'README.md', 
+        changes: 'Updated installation instructions and contact information',
+        changedLines: [
+          { line: 10, code: "Run `npm install` to install all dependencies.", type: '+', comments: [] },
+          { line: 25, code: "For support, contact support@example.com.", type: '+', comments: [] }
+        ]
+      },
+    ],
+  },
+  {
+    id: 'pr-67890',
+    title: 'Update README',
+    description: 'Updates the README file with new instructions.',
+    sourceCommit: '0456def',
+    targetBranch: 'develop',
+    status: 'pending',
+    statusMessage: 'Pull request is open',
+    user: { id: 'user-2', name: 'Bob', email: 'bob@example.com' },
+    comments: [],
+    fileChanges: [
+      { id: 'fileChange-2', fileName: 'README.md', changes: 'Updated installation instructions' },
+    ],
+  }
+];
 
-// Function to find a pull request by ID
-function findPullRequestById(id) {
-  return pullRequests.find(pr => pr.id === id);
-}
+const comments = [
+  {
+    id: 'comment-1',
+    content: 'Looks good to me.',
+    lineNumber: null,
+    reactions: { 'user-1': '👍', 'user-4': '👍' },
+    pullRequestId: 'pr-12345',
+  },
+  {
+    id: 'comment-3',
+    content: 'Looks good to me.',
+    lineNumber: null,
+    reactions: { 'user-1': '👍', 'user-2': '😀' },
+    pullRequestId: 'pr-12345',
+  },
+  {
+    id: 'comment-2',
+    content: 'Please add more details to the README changes.',
+    lineNumber: null,
+    reactions: { 'user-1': '👍', 'user-2': '😭' },
+    pullRequestId: 'pr-67890',
+  }
+];
 
-// Function to get a list of pull requests
-function getPullRequests(filters = {}) {
-  return pullRequests.filter(pr => {
-    return Object.entries(filters).every(([key, value]) => pr[key] === value);
-  });
-}
-
-// Function to get comments by pull request ID
-function getCommentsByPullRequestId(prId) {
-  return comments.filter(comment => comment.pullRequestId === prId);
-}
-
-// Function to create a new pull request
-function createPullRequest(input) {
-  const newPullRequest = { id: `pr-${Date.now()}`, ...input, status: 'open' };
-  pullRequests.push(newPullRequest);
-  return newPullRequest;
-}
-
-// Function to add a comment to a pull request
-function addCommentToPullRequest(input) {
-  const newComment = { id: `comment-${Date.now()}`, ...input };
-  comments.push(newComment);
-  return newComment;
-}
-
-// Function to add a reaction to a comment
-function addReactionToComment(commentId, reaction) {
-  const comment = comments.find(c => c.id === commentId);
-  if (!comment) return null;
-
-  comment.reactions = comment.reactions || [];
-  comment.reactions.push(reaction);
-  return comment;
-}
-
-// Functions to change the status of a pull request
-function mergePullRequest(id) {
-  const pullRequest = findPullRequestById(id);
-  if (pullRequest) pullRequest.status = 'merged';
-  return pullRequest;
-}
-
-function rejectPullRequest(id) {
-  const pullRequest = findPullRequestById(id);
-  if (pullRequest) pullRequest.status = 'rejected';
-  return pullRequest;
-}
-
-module.exports = {
-  findPullRequestById,
-  getPullRequests,
-  getCommentsByPullRequestId,
-  createPullRequest,
-  addCommentToPullRequest,
-  addReactionToComment,
-  mergePullRequest,
-  rejectPullRequest,
-};
+module.exports = { pullRequests, comments };
