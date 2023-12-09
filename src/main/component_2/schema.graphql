@@ -1,16 +1,92 @@
 type Query {
-  persons: [Person]
+  pullRequestById(id: ID!): PullRequest
+  pullRequests(filters: PullRequestFilter): [PullRequest]
+  commentsByPullRequest(pullRequestId: ID!): [Comment]
 }
 
-type Person {
-  id: ID!
-  name: String
-  age: Int
-  username: String
-  posts: [Post]
+type Mutation {
+  createPullRequest(input: CreatePullRequestInput!): PullRequest
+  addCommentToPullRequest(input: AddCommentInput!): Comment
+  addReactionToComment(input: AddReactionInput!): Comment
+  mergePullRequest(id: ID!): PullRequest
+  rejectPullRequest(id: ID!): PullRequest
 }
 
-type Post {
+type PullRequest {
   id: ID!
-  name: String
+  title: String!
+  createdAt: String!
+  description: String!
+  sourceCommit: String!
+  targetBranch: String!
+  status: String!
+  statusMessage: String!
+  user: User!
+  comments: [Comment]
+  fileChanges: [FileChange]
+}
+
+type FileChange {
+  id: ID!
+  fileName: String!
+  changes: String!
+  changedLines: [ChangedLine]
+  # fullContent: [String] # Added to represent the full file content
+}
+
+type ChangedLine {
+  line: Int!
+  code: String!
+  type: String! # '+' for additions, '-' for deletions
+  comments: [Comment]
+}
+
+type Comment {
+  id: ID!
+  content: String!
+  reactions: [UserReaction] # Updated to reflect new structure
+  reactionCounts: [ReactionCount] 
+}
+
+type UserReaction {
+  userId: ID!
+  reaction: String!
+}
+
+type ReactionCount {
+  reaction: String!
+  count: Int!
+}
+
+type User {
+  id: ID!
+  name: String!
+  email: String!
+}
+
+input PullRequestFilter {
+  status: String
+}
+
+input CreatePullRequestInput {
+  title: String!
+  description: String!
+  sourceCommit: String!
+  targetBranch: String!
+  user: UserInput!
+}
+
+input UserInput {
+  id: ID!
+}
+
+input AddCommentInput {
+  pullRequestId: ID!
+  content: String!
+  lineNumber: Int
+}
+
+input AddReactionInput {
+  commentId: ID!
+  reaction: String!
 }
