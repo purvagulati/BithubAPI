@@ -126,9 +126,16 @@ const resolvers = {
       },
 
       // Resolver to merge a pull request.
-      mergePullRequest: (_, {
-         id
-      }) => dbService.mergePullRequest(id),
+      mergePullRequest: (_, { id }) => {
+        const pullRequest = dbService.mergePullRequest(id);
+        if (!pullRequest || pullRequest.error) {
+           throw new Error(pullRequest.error || `Pull request with ID ${id} not found.`);
+        }
+     
+        // Augmenting the pull request with its comments using transformComments function.
+        pullRequest.comments = transformComments(dbService.getCommentsByPullRequestId(pullRequest.id));
+        return pullRequest;
+     },
 
       // Resolver to reject a pull request.
       rejectPullRequest: (_, {
