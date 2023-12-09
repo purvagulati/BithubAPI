@@ -3,7 +3,7 @@
 
 
 ## To setup:
-conda decativate
+conda deactivate
 source env/bin/activate  
 npm init -y  
 python -m pip install grpcio

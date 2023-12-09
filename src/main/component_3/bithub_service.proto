@@ -20,7 +20,7 @@ service BithubService {
 // Common message definitions
 
 message Delta {
-  bool is_it_commited = 1; // uncommitted or commited changes
+  bool is_it_committed = 1; // uncommitted or commited changes
   CodeChanges changes = 2;
 }
 
