@@ -1,6 +1,6 @@
 
 
-# Tests
+# Tests for Component 1
 
 ### Testing "List All Repositories"
 -   Endpoint: /repositories (GET)
