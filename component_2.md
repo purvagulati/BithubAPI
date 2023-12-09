@@ -454,7 +454,7 @@ This file is the service layer handling database operations related to pull requ
        }
      }
      ```
-   - **Screenshot:** ![Screenshot](https://github.com/17-625-API-Design-F23/a2-graphql-api-purvag03/blob/main/screenshots/M1E.png)
+   - **Screenshot:** ![Screenshot](/Users/purvagulati/final-team-project-team-mutators/src/main/component_2/screenshots/q1h.png)
    - **Remarks:** Timeslot error.
 
 9. **Testcase Identifier:** `Mut2-Happy`
