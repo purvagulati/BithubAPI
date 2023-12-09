@@ -267,7 +267,7 @@ This file is the service layer handling database operations related to pull requ
       ]
       }}}
      ```
-   - **Screenshot:** ![Screenshot](https://github.com/17-625-API-Design-F23/a2-graphql-api-purvag03/blob/main/screenshots/Q1H.png)
+   - **Screenshot:** ![Screenshot](https://github.com/17-625-API-Design-F23/final-team-project-team-mutators/blob/component2-graphql/src/main/component_2/screenshots/q1h.png)
    - **Remarks:** Successful case.
 
 2. **Testcase Identifier:** `Query1-Error`
