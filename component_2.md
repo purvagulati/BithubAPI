@@ -1,5 +1,4 @@
-# GraphQL API for Pull Request Management
-
+# GraphQL API 
 ## ER Diagram
 
 
@@ -653,6 +652,107 @@ This file is the service layer handling database operations related to pull requ
    - **Screenshot:** ![Screenshot](https://github.com/17-625-API-Design-F23/final-team-project-team-mutators/blob/component2-graphql/src/main/component_2/screenshots/m2e.png)
    - **Remarks:** Comment was not added as PR id is not valid.
 
+11. **Testcase Identifier:** `Mut3-Happy`
+   - **Description:** Adds a reaction to a specified comment in a pull request.
+   - **Input:** 
+   ```json
+    {
+     "input": { 
+      "id": "comment-1",
+      "userId": "user-9",
+      "reaction": "😀"
+    } }
+  ```
+   - **Output:** 
+     ```json
+     {
+     "data": {
+      "addReactionToComment": {
+      "id": "comment-1",
+      "userId": "user-1",
+      "content": "Looks good to me.",
+      "reactions": [
+        {
+          "userId": "user-1",
+          "reaction": "👍"
+        },
+        {
+          "userId": "user-4",
+          "reaction": "👍"
+        },
+        {
+          "userId": "user-9",
+          "reaction": "😀"
+        }
+      ],
+      "reactionCounts": [
+        {
+          "reaction": "👍",
+          "count": 2
+        },
+        {
+          "reaction": "😀",
+          "count": 1
+        }
+      ],
+      "pullRequestId": "pr-12345",
+      } } }
+     ```
+   - **Screenshot:** ![Screenshot](https://github.com/17-625-API-Design-F23/final-team-project-team-mutators/blob/component2-graphql/src/main/component_2/screenshots/m3h.png)
+   - **Remarks:** Reaction was added to the comment.
 
+12. **Testcase Identifier:** `Mut3-Error1`
+   - **Description:** Attempts to add a reaction to an invalid comment.
+   - **Input:** 
+     ```json
+     {
+     "input": { 
+      "id": "comment-0",
+      "userId": "user-9",
+      "reaction": "😀"
+       }  }
+     ```
+   - **Output:** 
+     ```json
+     {
+     "errors": [
+      {
+      "message": "Comment with ID comment-0 not found"
+      }
+     ],
+     "data": {
+       "addReactionToComment": null
+     }
+     }
+     ```
+   - **Screenshot:** ![Screenshot](https://github.com/17-625-API-Design-F23/final-team-project-team-mutators/blob/component2-graphql/src/main/component_2/screenshots/m3e1.png)
+   - **Remarks:** Comment id not found.
+
+13. **Testcase Identifier:** `Mut3-Error2`
+   - **Description:** Attempts to add a second reaction to an invalid comment.
+   - **Input:** 
+     ```json
+     {
+     "input": { 
+      "id": "comment-1",
+      "userId": "user-1",
+      "reaction": "😀"
+       }  }
+     ```
+   - **Output:** 
+     ```json
+     {
+     "errors": [
+      {
+      "message": "User user-1 already reacted with 👍."
+      }
+     ],
+     "data": {
+       "addReactionToComment": null
+     }
+     }
+     ```
+   - **Screenshot:** ![Screenshot](https://github.com/17-625-API-Design-F23/final-team-project-team-mutators/blob/component2-graphql/src/main/component_2/screenshots/m3e2.png)
+   - **Remarks:** User already had a reaction to that comment.
 
 
