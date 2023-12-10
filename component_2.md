@@ -421,7 +421,7 @@ This file is the service layer handling database operations related to pull requ
    - **Screenshot:** ![Screenshot](https://github.com/17-625-API-Design-F23/final-team-project-team-mutators/blob/component2-graphql/src/main/component_2/screenshots/q2h.png)
    - **Remarks:** Successful case.
 
-   4. **Testcase Identifier:** `Query2-Error`
+4. **Testcase Identifier:** `Query2-Error`
    - **Description:** Fetches multiple pull requests based on specified filter, that is an inavlid PR status.
    - **Inputs:** 
      ```json
@@ -447,7 +447,7 @@ This file is the service layer handling database operations related to pull requ
    - **Screenshot:** ![Screenshot](https://github.com/17-625-API-Design-F23/final-team-project-team-mutators/blob/component2-graphql/src/main/component_2/screenshots/q2e.png))
    - **Remarks:** 'pending', 'merged', 'rejected', 'merge conflict' are the only valid PR statuses available in BitHub. 
 
-   5. **Testcase Identifier:** `Query3-Happy`
+5. **Testcase Identifier:** `Query3-Happy`
    - **Description:** Retrieves all comments associated of a valid pull request.
    - **Inputs:** 
      ```json
