@@ -72,7 +72,6 @@ This file defines the GraphQL schema for the API, detailing the structure for qu
 - **Query Type**: Outlines the available queries, such as `pullRequestById`, `pullRequests`, and `commentsByPullRequest`.
 - **Mutation Type**: Specifies the available mutations, including `createPullRequest`, `addCommentToPullRequest`, `addReactionToComment`, `removeReactionFromComment`, `mergePullRequest`, and `rejectPullRequest`.
 
-[View Schema.graphql](https://github.com/your-repository-link/schema.graphql)
 
 ### 2. Resolvers.js
 
@@ -81,7 +80,6 @@ Contains the logic for handling GraphQL queries and mutations.
 - **Queries**: Implements functions to fetch data as per the specified queries.
 - **Mutations**: Handles data modifications and updates as defined in the mutations.
 
-[View Resolvers.js](https://github.com/your-repository-link/resolvers.js)
 
 ### 3. db.js
 
@@ -90,7 +88,6 @@ Acts as a mock database for the system, containing:
 - **Mock Data for Pull Requests and Comments**: Arrays storing mock data simulating pull requests and comments.
 - **Utility Functions**: Functions that provide and manipulate mock data for the resolvers.
 
-[View Db.js](https://github.com/your-repository-link/db.js)
 
 ### 4. pullRequestService.js
 
@@ -99,7 +96,6 @@ This file is the service layer handling database operations related to pull requ
 - It includes functions for finding, creating, and updating pull requests and comments.
 - Ensures the business logic is separated from the data fetching logic.
 
-[View pullRequestService.js](https://github.com/your-repository-link/pullRequestService.js)
 
 ## Testing
 
