@@ -818,4 +818,440 @@ This file is the service layer handling database operations related to pull requ
    - **Screenshot:** ![Screenshot](https://github.com/17-625-API-Design-F23/final-team-project-team-mutators/blob/component2-graphql/src/main/component_2/screenshots/m4e.png)
    - **Remarks:** Comment id  was invalid.
 
+16. **Testcase Identifier:** `Mut5-Happy1`
+   - **Description:** Merges a specified pull request as its sourceCommit doe snot start from 0.
+   - **Input:** 
+     ```json
+     {
+      "mergePullRequestId": "pr-12345"
+     }
+     ```
+   - **Output:** 
+     ```json
+     {
+     "data": {
+       "mergePullRequest": {
+      "id": "pr-12345",
+      "status": "merged",
+      "title": "Fix login issue",
+      "createdAt": "2023-12-09T09:08:27.997Z",
+      "description": "This pull request fixes the login issue reported in issue #54321.",
+      "sourceCommit": "123abc",
+      "commits": "blackbox tests,whitebox test",
+      "targetBranch": "main",
+      "statusMessage": "Pull request successfully merged",
+      "user": {
+        "id": "user-1",
+        "name": "Alice",
+        "email": "alice@cmu.andrew.edu"
+      },
+      "comments": [
+        {
+          "id": "comment-1",
+          "userId": "user-1",
+          "content": "Looks good to me.",
+          "reactions": [
+            {
+              "userId": "user-1",
+              "reaction": "👍"
+            },
+            {
+              "userId": "user-4",
+              "reaction": "👍"
+            }
+          ],
+          "pullRequestId": "pr-12345",
+          "lineNumber": null,
+          "reactionCounts": [
+            {
+              "reaction": "👍",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "id": "comment-3",
+          "userId": "user-1",
+          "content": "Looks good to me.",
+          "reactions": [
+            {
+              "userId": "user-1",
+              "reaction": "👍"
+            },
+            {
+              "userId": "user-2",
+              "reaction": "😀"
+            }
+          ],
+          "pullRequestId": "pr-12345",
+          "lineNumber": null,
+          "reactionCounts": [
+            {
+              "reaction": "👍",
+              "count": 1
+            },
+            {
+              "reaction": "😀",
+              "count": 1
+            }
+          ]
+        }
+      ],
+      "fileChanges": [
+        {
+          "id": "fileChange-1",
+          "fileName": "login.js",
+          "changes": "Added null check for user credentials and updated login logic",
+          "changedLines": [
+            {
+              "line": 55,
+              "code": "if (userCredentials != null) {",
+              "type": "+",
+              "comments": []
+            },
+            {
+              "line": 56,
+              "code": "   performLogin(userCredentials);",
+              "type": "+",
+              "comments": []
+            }
+          ]
+        },
+        {
+          "id": "fileChange-2",
+          "fileName": "README.md",
+          "changes": "Updated installation instructions and contact information",
+          "changedLines": [
+            {
+              "line": 10,
+              "code": "Run `npm install` to install all dependencies.",
+              "type": "+",
+              "comments": [
+                {
+                  "id": "comment-38",
+                  "userId": "user-3",
+                  "content": "This line needs refactoring.",
+                  "reactions": [
+                    {
+                      "userId": "user-1",
+                      "reaction": "👍"
+                    }
+                  ],
+                  "reactionCounts": [
+                    {
+                      "reaction": "👍",
+                      "count": 1
+                    }
+                  ],
+                  "pullRequestId": "pr-12345",
+                  "lineNumber": 10
+                }
+              ]
+            },
+            {
+              "line": 25,
+              "code": "For support, contact xyz@andrew.cmu.edu.",
+              "type": "+",
+              "comments": [
+                {
+                  "id": "comment-45",
+                  "userId": "user-3",
+                  "content": "This line needs refactoring.",
+                  "reactions": [
+                    {
+                      "userId": "user-19",
+                      "reaction": "👍"
+                    }
+                  ],
+                  "reactionCounts": [
+                    {
+                      "reaction": "👍",
+                      "count": 1
+                    }
+                  ],
+                  "pullRequestId": "pr-12345",
+                  "lineNumber": 25
+                }
+              ]
+            }
+          ]
+        }
+      ]   } } }
+     ```
+   - **Screenshot:** ![Screenshot](https://github.com/17-625-API-Design-F23/final-team-project-team-mutators/blob/component2-graphql/src/main/component_2/screenshots/m5h1.png)
+   - **Remarks:** PR was merged.
 
+17. **Testcase Identifier:** `Mut5-Happy2`
+   - **Description:** Does not merge a specified pull request as its sourceCommit starts from 0.
+   - **Input:** 
+     ```json
+     {
+      "mergePullRequestId": "pr-67890"
+     }
+     ```
+- **Output:** 
+     ```json
+   {
+  "data": {
+    "mergePullRequest": {
+      "id": "pr-67890",
+      "status": "merge conflict",
+      "title": "Update README",
+      "createdAt": "2023-02-09T09:08:20.997Z",
+      "description": "Updates the README file with new instructions.",
+      "sourceCommit": "0456def",
+      "commits": null,
+      "targetBranch": "develop",
+      "statusMessage": "This branch has conflicts that must be resolved",
+      "user": {
+        "id": "user-2",
+        "name": "Bob",
+        "email": "bob@example.com"
+      },
+      "comments": [
+        {
+          "id": "comment2",
+          "userId": "user-2",
+          "content": "Please add more details to the README changes.",
+          "reactions": [
+            {
+              "userId": "user-1",
+              "reaction": "👍"
+            },
+            {
+              "userId": "user-2",
+              "reaction": "😭"
+            }
+          ],
+          "pullRequestId": "pr-67890",
+          "lineNumber": null,
+          "reactionCounts": [
+            {
+              "reaction": "👍",
+              "count": 1
+            },
+            {
+              "reaction": "😭",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    }
+  } }
+
+     ```
+   - **Screenshot:** ![Screenshot](https://github.com/17-625-API-Design-F23/final-team-project-team-mutators/blob/component2-graphql/src/main/component_2/screenshots/m5h2.png)
+   - **Remarks:** Status updated to 'merge conflict'.
+
+18. **Testcase Identifier:** `Mut5-Error`
+   - **Description:** Does not merge an invalid pull request.
+   - **Input:** 
+     ```json
+     {
+      "mergePullRequestId": "pr-0"
+     }
+     ```
+- **Output:** 
+     ```json
+    {
+  "errors": [
+    {
+      "message": "Pull request not found"
+    }
+  ],
+  "data": {
+    "mergePullRequest": null
+  } }
+  ```
+   - **Screenshot:** ![Screenshot](https://github.com/17-625-API-Design-F23/final-team-project-team-mutators/blob/component2-graphql/src/main/component_2/screenshots/m5e.png)
+   - **Remarks:** PR id was invalid.
+   
+
+19. **Testcase Identifier:** `Mut6-Happyr`
+   - **Description:** Marks a pull request as rejected.
+   - **Input:** 
+     ```json
+     {
+      "mergePullRequestId": "pr-12345"
+     }
+     ```
+- **Output:** 
+     ```json
+     {
+  "data": {
+    "rejectPullRequest": {
+      "id": "pr-12345",
+      "title": "Fix login issue",
+      "createdAt": "2023-12-09T09:08:27.997Z",
+      "description": "This pull request fixes the login issue reported in issue #54321.",
+      "sourceCommit": "123abc",
+      "commits": "blackbox tests,whitebox test",
+      "targetBranch": "main",
+      "status": "rejected",
+      "user": {
+        "id": "user-1"
+      },
+      "comments": [
+        {
+          "id": "comment-1",
+          "userId": "user-1",
+          "content": "Looks good to me.",
+          "reactions": [
+            {
+              "userId": "user-1",
+              "reaction": "👍"
+            },
+            {
+              "userId": "user-4",
+              "reaction": "👍"
+            }
+          ],
+          "reactionCounts": [
+            {
+              "reaction": "👍",
+              "count": 2
+            }
+          ],
+          "pullRequestId": "pr-12345",
+          "lineNumber": null
+        },
+        {
+          "id": "comment-3",
+          "userId": "user-1",
+          "content": "Looks good to me.",
+          "reactions": [
+            {
+              "userId": "user-1",
+              "reaction": "👍"
+            },
+            {
+              "userId": "user-2",
+              "reaction": "😀"
+            }
+          ],
+          "reactionCounts": [
+            {
+              "reaction": "👍",
+              "count": 1
+            },
+            {
+              "reaction": "😀",
+              "count": 1
+            }
+          ],
+          "pullRequestId": "pr-12345",
+          "lineNumber": null
+        }
+      ],
+      "fileChanges": [
+        {
+          "id": "fileChange-1",
+          "fileName": "login.js",
+          "changes": "Added null check for user credentials and updated login logic",
+          "changedLines": [
+            {
+              "line": 55,
+              "code": "if (userCredentials != null) {",
+              "type": "+",
+              "comments": []
+            },
+            {
+              "line": 56,
+              "code": "   performLogin(userCredentials);",
+              "type": "+",
+              "comments": []
+            }
+          ]
+        },
+        {
+          "id": "fileChange-2",
+          "fileName": "README.md",
+          "changes": "Updated installation instructions and contact information",
+          "changedLines": [
+            {
+              "line": 10,
+              "code": "Run `npm install` to install all dependencies.",
+              "type": "+",
+              "comments": [
+                {
+                  "id": "comment-38",
+                  "userId": "user-3",
+                  "content": "This line needs refactoring.",
+                  "reactions": [
+                    {
+                      "userId": "user-1",
+                      "reaction": "👍"
+                    }
+                  ],
+                  "reactionCounts": [
+                    {
+                      "reaction": "👍",
+                      "count": 1
+                    }
+                  ],
+                  "pullRequestId": "pr-12345",
+                  "lineNumber": 10
+                }
+              ]
+            },
+            {
+              "line": 25,
+              "code": "For support, contact xyz@andrew.cmu.edu.",
+              "type": "+",
+              "comments": [
+                {
+                  "id": "comment-45",
+                  "userId": "user-3",
+                  "content": "This line needs refactoring.",
+                  "reactions": [
+                    {
+                      "userId": "user-19",
+                      "reaction": "👍"
+                    }
+                  ],
+                  "reactionCounts": [
+                    {
+                      "reaction": "👍",
+                      "count": 1
+                    }
+                  ],
+                  "pullRequestId": "pr-12345",
+                  "lineNumber": 25
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  } }
+  ```
+   - **Screenshot:** ![Screenshot](https://github.com/17-625-API-Design-F23/final-team-project-team-mutators/blob/component2-graphql/src/main/component_2/screenshots/m6h.png)
+   - **Remarks:** PR was rejected, status updated to 'rejected'.
+
+
+20. **Testcase Identifier:** `Mut6-Error`
+   - **Description:** Does not reject an invalid pull request, throws Error.
+   - **Input:** 
+     ```json
+     {
+      "mergePullRequestId": "pr-0"
+     }
+     ```
+- **Output:** 
+     ```json
+     {
+  "errors": [
+    {
+      "message": "Pull request not found"
+    }
+  ],
+  "data": {
+    "rejectPullRequest": null
+  } }
+   
+  ```
+   - **Screenshot:** ![Screenshot](https://github.com/17-625-API-Design-F23/final-team-project-team-mutators/blob/component2-graphql/src/main/component_2/screenshots/m6e.png)
+   - **Remarks:** PR id was invalid.
+   

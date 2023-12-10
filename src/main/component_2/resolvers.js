@@ -142,6 +142,13 @@ const resolvers = {
      
         // Augmenting the pull request with its comments using transformComments function.
         pullRequest.comments = transformComments(dbService.getCommentsByPullRequestId(pullRequest.id));
+
+        pullRequest.fileChanges.forEach(fileChange => {
+          fileChange.changedLines.forEach(changedLine => {
+             changedLine.comments = transformInlineComments(dbService.getCommentsBychangedLines(changedLine.line));
+          });
+       });
+        
         return pullRequest;
      },
 
@@ -151,6 +158,16 @@ const resolvers = {
         if (pullRequest.error) {
            throw new Error(pullRequest.error);
         }
+
+        // Augmenting the pull request with its comments using transformComments function.
+        pullRequest.comments = transformComments(dbService.getCommentsByPullRequestId(pullRequest.id));
+
+        pullRequest.fileChanges.forEach(fileChange => {
+          fileChange.changedLines.forEach(changedLine => {
+             changedLine.comments = transformInlineComments(dbService.getCommentsBychangedLines(changedLine.line));
+          });
+       });
+
         return pullRequest;
      },
       
@@ -158,3 +175,4 @@ const resolvers = {
 };
 
 module.exports = resolvers;
+
