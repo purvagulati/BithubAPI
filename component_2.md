@@ -6,7 +6,7 @@
 
 - **Input:** `id: ID`
 - **Description:** Retrieves the details of a pull request by its unique ID.
-- **Output:** A `PullRequest` object, including fields like `id`, `title`, `createdAt`, `description`, `sourceCommit`, `targetBranch`, `status`, `statusMessage`, `user`, `comments`, and `fileChanges`.
+- **Output:** A `PullRequest` object, including fields like `id`, `title`, `createdAt`, `description`, `sourceCommit`,`commits` `targetBranch`, `status`, `statusMessage`, `user`, `comments`, and `fileChanges`.
 
 ### 2. pullRequests
 
