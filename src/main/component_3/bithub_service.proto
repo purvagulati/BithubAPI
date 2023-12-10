@@ -12,8 +12,8 @@ enum ChangeStatus {
 service BithubService {
   rpc WritePRDescription (PRDescriptionRequest) returns (PRDescriptionResponse);
   rpc SmartAutocomplete (SmartAutocompleteRequest) returns (SmartAutocompleteResponse);
-  // stream -> test 
-  rpc ChatGPTForCode (ChatGPTCodeTaskRequest) returns (ChatGPTCodeTaskResponse);
+  // no stream as this is more 1-1 request response rather than conversational
+  rpc ChatGPTForCode (ChatGPTCodeTaskRequest) returns (ChatGPTCodeTaskResponse); 
   rpc VirtualPairProgramming (stream PairProgrammingRequest) returns (stream PairProgrammingResponse); // showed stream for conversation
 }
 
@@ -40,7 +40,6 @@ message ProposedDelta {
   Delta file_deltas = 1;
 }
 
-// Clarity on what is recent edit in the current file?
 message Edit {
   string file_path = 1;
   int32 line_number = 2;
@@ -103,7 +102,6 @@ message SmartAutocompleteResponse {
   string completion_suggestion = 1;
 }
 
-// Should we have 2 different interface for with Clarification or without clarification 
 message ChatGPTCodeTaskRequest {
   string task_description = 1; //usually only used this
   int32 repository_id = 2;

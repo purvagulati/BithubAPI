@@ -87,17 +87,11 @@ class BithubServiceServicer(bithub_service_pb2_grpc.BithubServiceServicer):
     
     # 4. Virtual Pair Programming
     def VirtualPairProgramming(self, request_iterator, context):
-        print("Started")
-        print("check requests")
         for request in request_iterator:
-            print("There is a request")
-            print(f"Received request for repository_id: {request.repository_id}")
             for entry in VIRTUAL_PAIR_PROGRAMMING_DATABASE.values():
-                print("From database entry: ", entry["request"]["repository_id"])
                 if (entry["request"]["repository_id"] == request.repository_id
                     and entry["request"]["issue_description"] == request.issue_description):
                     
-                    print("Found a match")
                     response_data = entry["response"]
                     
                     conversation_entry = bithub_service_pb2.Conversation(
@@ -109,7 +103,6 @@ class BithubServiceServicer(bithub_service_pb2_grpc.BithubServiceServicer):
                             ) for entry in response_data["conversation"]
                         ]
                     )
-                    print("added Conversation entry")
                     delta = bithub_service_pb2.ProposedDelta(
                         file_deltas=bithub_service_pb2.Delta(
                             is_it_committed=response_data["proposed_delta"]["file_deltas"]["is_it_committed"],
@@ -133,85 +126,8 @@ class BithubServiceServicer(bithub_service_pb2_grpc.BithubServiceServicer):
                     )
                     
                     yield response
-                # else:
-                #     # Where the repository_id is not found
-                #     context.set_code(grpc.StatusCode.NOT_FOUND)
-                #     context.set_details('Repository ID not found')
-                #     pass
-                    
-                     
-            
-        # # for request in request_iterator:
-        #     repository_id = request.repository_id
-        #     # db_entry = VIRTUAL_PAIR_PROGRAMMING_DATABASE.get(repository_id)    
-            
-        #     if db_entry:
-        #         response_data = db_entry["response"]
-                
-                # response = bithub_service_pb2.PairProgrammingResponse(
-                #     conversation=bithub_service_pb2.Conversation(
-                #         entries=[bithub_service_pb2.Conversation.ConversationEntry(
-                #             speaker=entry["speaker"],
-                #             message=entry["message"],
-                #             timestamp=entry["timestamp"]
-                #         ) for entry in response_data["conversation"]
-                #         ]
-                #     ),proposed_delta=bithub_service_pb2.ProposedDelta(
-                #         file_deltas=bithub_service_pb2.Delta(
-                #             is_it_committed=response_data["proposed_delta"]["file_deltas"]["is_it_committed"],
-                #             changes=bithub_service_pb2.CodeChanges(
-                #                 code_changes=[bithub_service_pb2.CodeChange(
-                #                     file_path=change["file_path"],
-                #                     original_code=change["original_code"],
-                #                     modified_code=change["modified_code"],
-                #                     change_status=change["change_status"]
-                #                 ) for change in response_data["proposed_delta"]["file_deltas"]["changes"]
-                #                 ]
-                #             )
-                #         )
-                #     ),
-                #     plain_english_description=response_data["plain_english_description"]
-                # )
-        #         yield response
-                
-            # else:
-            #     # Where the repository_id is not found
-            #     # context.set_code(grpc.StatusCode.NOT_FOUND)
-            #     # context.set_details('Repository ID not found')
-            #     pass
-                
-                # conversation_entries = [
-                #     bithub_service_pb2.Conversation.ConversationEntry(**entry)
-                #     for entry in response_data["conversation"]
-                # ]
-                # code_changes = [
-                #     bithub_service_pb2.CodeChange(**change)
-                #     for change in response_data["proposed_delta"]["file_deltas"]["changes"]
-                # ]
-
-                # proposed_delta = bithub_service_pb2.ProposedDelta(
-                #     file_deltas=bithub_service_pb2.Delta(
-                #         is_it_committed=response_data["proposed_delta"]["file_deltas"]["is_it_committed"],
-                #         changes=code_changes
-                #     )
-                # )
-
-                # response = bithub_service_pb2.PairProgrammingResponse(
-                #     conversation=bithub_service_pb2.Conversation(entries=conversation_entries),
-                #     proposed_delta=proposed_delta,
-                #     plain_english_description=response_data["plain_english_description"]
-                # )
-                # yield response
-                
-            # else:
-            #     context.set_code(grpc.StatusCode.NOT_FOUND)
-            #     context.set_details('Repository ID not found')
-            #     break
 
     
-    
-
-
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
