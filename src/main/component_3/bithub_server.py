@@ -103,7 +103,6 @@ class BithubServiceServicer(bithub_service_pb2_grpc.BithubServiceServicer):
                             ) for entry in response_data["conversation"]
                         ]
                     )
-                    print("added Conversation entry")
                     delta = bithub_service_pb2.ProposedDelta(
                         file_deltas=bithub_service_pb2.Delta(
                             is_it_committed=response_data["proposed_delta"]["file_deltas"]["is_it_committed"],
