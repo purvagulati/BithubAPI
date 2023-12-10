@@ -51,7 +51,6 @@ def test_smart_autocomplete(stub):
                 )
             ]
         ),
-        # ... Add committed_changes and uncommitted_changes similar to the previous example
         recent_edits=bithub_service_pb2.Edits(
             edits=[
                 bithub_service_pb2.Edit(
@@ -138,7 +137,7 @@ def test_virtual_pair_programming(stub):
         # Add other necessary fields
     ])
     responses = list(stub.VirtualPairProgramming(request_iterator))
-    assert len(responses) == 1  # or more, depending on your test setup
+    assert len(responses) == 1
     assert responses[0].plain_english_description == "Fixed a syntax error in src/app.py"
 
 
