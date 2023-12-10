@@ -702,7 +702,7 @@ This file is the service layer handling database operations related to pull requ
    - **Remarks:** Reaction was added to the comment.
 
 12. **Testcase Identifier:** `Mut3-Error1`
-   - **Description:** Attempts to add a reaction to an invalid comment.
+   - **Description:** Attempts to add a reaction to a comment.
    - **Input:** 
      ```json
      {
@@ -754,5 +754,68 @@ This file is the service layer handling database operations related to pull requ
      ```
    - **Screenshot:** ![Screenshot](https://github.com/17-625-API-Design-F23/final-team-project-team-mutators/blob/component2-graphql/src/main/component_2/screenshots/m3e2.png)
    - **Remarks:** User already had a reaction to that comment.
+
+14. **Testcase Identifier:** `Mut4-Happy`
+   - **Description:** Removes a reaction from a valid comment.
+   - **Input:** 
+```json
+   {
+     "input": {
+      "commentId": "comment-1",
+      "userId": "user-1"
+    }
+  }
+   ```
+   - **Output:** 
+      ```json
+     {
+      "data": {
+       "removeReactionFromComment": {
+      "id": "comment-1",
+      "userId": "user-1",
+      "content": "Looks good to me.",
+      "reactions": [
+        {
+          "userId": "user-4",
+          "reaction": "👍"
+        }
+      ],
+      "reactionCounts": [
+        {
+          "reaction": "👍",
+          "count": 1
+        }
+      ],
+      "pullRequestId": "pr-12345",
+      "lineNumber": null
+     } } }
+     ```
+   - **Screenshot:** ![Screenshot](https://github.com/17-625-API-Design-F23/final-team-project-team-mutators/blob/component2-graphql/src/main/component_2/screenshots/m4h.png)
+   - **Remarks:** Reaction was removed from the comment.
+
+15. **Testcase Identifier:** `Mut4-Error`
+   - **Description:** Attempts to remove a reaction from an invalid comment.
+   - **Input:** 
+     ```json
+     {
+     "input": { 
+      "id": "comment-0",
+      "userId": "user-1"
+       }  }
+     ```
+   - **Output:** 
+     ```json
+     {
+      "errors": [
+      {
+      "message": "Comment with ID comment-0 not found"
+      }
+       ],
+      "data": {
+       "removeReactionFromComment": null
+     } }
+     ```
+   - **Screenshot:** ![Screenshot](https://github.com/17-625-API-Design-F23/final-team-project-team-mutators/blob/component2-graphql/src/main/component_2/screenshots/m4e.png)
+   - **Remarks:** Comment id  was invalid.
 
 
