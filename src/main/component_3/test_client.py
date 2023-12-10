@@ -134,7 +134,6 @@ def test_virtual_pair_programming(stub):
             repository_id=200, 
             issue_description="Application crashes on startup"
         )
-        # Add other necessary fields
     ])
     responses = list(stub.VirtualPairProgramming(request_iterator))
     assert len(responses) == 1
