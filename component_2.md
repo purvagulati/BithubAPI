@@ -537,5 +537,122 @@ This file is the service layer handling database operations related to pull requ
    - **Screenshot:** ![Screenshot](https://github.com/17-625-API-Design-F23/final-team-project-team-mutators/blob/component2-graphql/src/main/component_2/screenshots/q3e.png)
    - **Remarks:** No comments are displayed as the pull request with specified id does not exist.
 
+7. **Testcase Identifier:** `Mut1-Happy`
+   - **Description:** Creates a new pull request with specified details.
+   - **Inputs:** 
+     ```json
+     {
+     "input": {
+       "title": "Bug Fix: User Authentication Error",
+       "description": "Resolves an issue where users were unable to log in under certain conditions.",
+      "sourceCommit": "78910ghijkl",
+      "targetBranch": "development",
+      "user": {
+           "id": "user-456",
+           "name": "Purva",
+          "email": "purva@cmu.andrew.edu"
+        }
+     }
+     ```
+   - **Output:** 
+     ```json
+        {
+     "data": {
+     "createPullRequest": {
+      "id": "pr-1702169036320",
+      "title": "Bug Fix: User Authentication Error",
+      "createdAt": "2023-12-10T00:43:56.320Z",
+      "description": "Resolves an issue where users were unable to log in under certain conditions.",
+      "sourceCommit": "78910ghijkl",
+      "targetBranch": "development",
+      "status": "pending",
+      "statusMessage": "Pull request created",
+      "user": {
+        "id": "user-456",
+        "name": "Purva",
+        "email": "purva@cmu.andrew.edu"
+      } } } }
+     ```
+   - **Screenshot:** ![Screenshot](https://github.com/17-625-API-Design-F23/final-team-project-team-mutators/blob/component2-graphql/src/main/component_2/screenshots/m1h.png)
+   - **Remarks:** New pull request with specified details created
+
+8. **Testcase Identifier:** `Mut1-Error`
+   - **Description:** Attemots to creates a new pull request with some missing details.
+   - **Inputs:** 
+     ```json
+     {
+     "input": {
+       "title": "Bug Fix: User Authentication Error",
+       "description": "Resolves an issue where users were unable to log in under certain conditions.",
+      "targetBranch": "development",
+      "user": {
+           "id": "user-456",
+           "name": "Purva",
+          "email": "purva@cmu.andrew.edu"
+        }
+     }
+     ```
+   - **Output:** 
+     ```json
+        {
+      "errors": [
+       {
+      "message": "Variable \"$input\" got invalid value { title: \"Bug Fix: User Authentication Error\", description: \"Resolves an issue where users were unable to log in under certain conditions.\", targetBranch: \"development\", user: { id: \"user-456\", name: \"Purva\", email: \"purva@cmu.andrew.edu\" } }; Field \"sourceCommit\" of required type \"String!\" was not provided."
+      }  ]  }
+     ```
+   - **Screenshot:** ![Screenshot](https://github.com/17-625-API-Design-F23/final-team-project-team-mutators/blob/component2-graphql/src/main/component_2/screenshots/m1h.png)
+   - **Remarks:** GraphQL performs its own validation based on theschema. The mutation's input fields are marked as non-nullable (using !) in the GraphQL schema, is these fields are missing or null in the request, GraphQ throws a validation error before the resolver is executed. 
+
+9. **Testcase Identifier:** `Mut2-Happy`
+   - **Description:** Adds a comment to a specific pull request.
+   - **Inputs:** 
+     ```json
+     {
+     "input": {
+      "pullRequestId": "pr-12345",
+     "content": "Add unit tests for each class",
+      "userId": "purvag"
+     } }
+     ```
+   - **Output:** 
+     ```json
+     {
+     "data": {
+      "addCommentToPullRequest": {
+      "id": "comment-1702173626504",
+      "userId": "purvag",
+      "content": "Add unit tests for each class"
+     } } }
+     ```
+   - **Screenshot:** ![Screenshot](https://github.com/17-625-API-Design-F23/final-team-project-team-mutators/blob/component2-graphql/src/main/component_2/screenshots/m2h.png)
+   - **Remarks:** Successful Case. 
+
+10. **Testcase Identifier:** `Mut2-Error`
+   - **Description:** Does not add a comment to an invalid pull request.
+   - **Input:** 
+     ```json
+     {
+     "input": {
+      "pullRequestId": "pr-0",
+     "content": "Add unit tests for each class",
+      "userId": "purvag"
+     } }
+     ```
+   - **Output:** 
+     ```json
+      {
+     "errors": [
+      {
+         "message": "Pull request not found"
+      }
+      ],
+        "data": {
+       "addCommentToPullRequest": null
+     } }
+     ```
+   - **Screenshot:** ![Screenshot](https://github.com/17-625-API-Design-F23/final-team-project-team-mutators/blob/component2-graphql/src/main/component_2/screenshots/m2e.png)
+   - **Remarks:** Comment was not added as PR id is not valid.
+
+
 
 

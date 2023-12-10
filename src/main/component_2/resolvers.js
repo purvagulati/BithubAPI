@@ -72,22 +72,30 @@ const resolvers = {
    // Mutations
    Mutation: {
       // Resolver to create a new pull request.
-      createPullRequest: (_, {
-         input
-      }) => dbService.createPullRequest(input),
+      createPullRequest: (_, { input }) => {
+        try {
+            // Attempt to create a new pull request using the input
+            return dbService.createPullRequest(input);
+        } catch (error) {
+            // Catch and handle any errors from the createPullRequest function
+            throw new Error(`Error creating pull request: ${error.message}`);
+        }
+    },
+    
 
       // Resolver to add a new comment to a pull request.
-      addCommentToPullRequest: (_, {
-         input
-      }) => {
-         const result = dbService.addCommentToPullRequest(input);
-         if (result.error) {
+      addCommentToPullRequest: (_, { input }) => {
+        const result = dbService.addCommentToPullRequest(input);
+        if (result.error) {
             throw new Error(result.error); // Error handling for comment creation failure.
-         }
-         // Transform the added comment's reactions
-         result.comments = transformComments(result.comments);
-         return result;
-      },
+        }
+        if (!result.comments) {
+            result.comments = []; // Ensure comments is an array if undefined
+        }
+        result.comments = transformComments(result.comments);
+        return result;
+    },
+    
 
       // Resolver to add a reaction to a comment.
       addReactionToComment: (_, {
@@ -140,15 +148,12 @@ const resolvers = {
       // Resolver to reject a pull request.
       rejectPullRequest: (_, { id }) => {
         const pullRequest = dbService.rejectPullRequest(id);
-        if (!pullRequest || pullRequest.error) {
-           throw new Error(pullRequest.error || `Pull request with ID ${id} not found.`);
+        if (pullRequest.error) {
+           throw new Error(pullRequest.error);
         }
-     
-        // Augmenting the pull request with its comments using transformComments function.
-        pullRequest.comments = transformComments(dbService.getCommentsByPullRequestId(pullRequest.id));
         return pullRequest;
      },
-     
+      
    },
 };
 

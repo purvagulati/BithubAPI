@@ -18,6 +18,7 @@ const {
     // Check if status filter is provided and if it's valid
     if (filters.status && !validStatuses.includes(filters.status)) {
        throw new Error(`Invalid status filter: ${filters.status}`);
+
     }
  
     return pullRequests.filter(pr => {
@@ -35,8 +36,8 @@ const {
     // Check if the pull request exists
     if (!pullRequestExists(prId)) {
         throw new Error(`Pull request with ID ${prId} not found.`);
-    }
 
+    }
     return comments
         .filter(comment => comment.pullRequestId === prId)
         .map(comment => ({
@@ -178,7 +179,6 @@ const {
     return pullRequest;
  }
 
- 
  // Exporting the functions to make them available for other modules.
  module.exports = {
     findPullRequestById,
