@@ -507,7 +507,7 @@ This file is the service layer handling database operations related to pull requ
    - **Remarks:** Successful case.
 
 6. **Testcase Identifier:** `Query3-Error`
-   - **Description:** Comments associated of an invalid pull request `id` return null.
+   - **Description:** Comments associated of an invalid pull request `id` returns null, throws error.
    - **Inputs:** 
      ```json
      {
@@ -594,7 +594,7 @@ This file is the service layer handling database operations related to pull requ
       }  ]  }
      ```
    - **Screenshot:** ![Screenshot](https://github.com/17-625-API-Design-F23/final-team-project-team-mutators/blob/component2-graphql/src/main/component_2/screenshots/m1h.png)
-   - **Remarks:** GraphQL performs its own validation based on theschema. The mutation's input fields are marked as non-nullable (using !) in the GraphQL schema, is these fields are missing or null in the request, GraphQ throws a validation error before the resolver is executed. 
+   - **Remarks:** GraphQL performs its own validation based on theschema. The mutation's input fields are marked as non-nullable in the GraphQL schema, is these fields are missing or null in the request, GraphQ throws a validation error before the resolver is executed. 
 
 9. **Testcase Identifier:** `Mut2-Happy`
    - **Description:** Adds a comment to a specific pull request.
@@ -696,7 +696,7 @@ This file is the service layer handling database operations related to pull requ
    - **Remarks:** Reaction was added to the comment.
 
 12. **Testcase Identifier:** `Mut3-Error1`
-   - **Description:** Attempts to add a reaction to a comment.
+   - **Description:** Attempts to add a reaction to an invalid comment.
    - **Input:** 
      ```json
      {
@@ -813,7 +813,7 @@ This file is the service layer handling database operations related to pull requ
    - **Remarks:** Comment id  was invalid.
 
 16. **Testcase Identifier:** `Mut5-Happy1`
-   - **Description:** Merges a specified pull request as its sourceCommit doe snot start from 0.
+   - **Description:** Merges a specified pull request as its sourceCommit does not start from 0.
    - **Input:** 
      ```json
      {
@@ -976,7 +976,7 @@ This file is the service layer handling database operations related to pull requ
    - **Remarks:** PR was merged.
 
 17. **Testcase Identifier:** `Mut5-Happy2`
-   - **Description:** Does not merge a specified pull request as its sourceCommit starts from 0.
+   - **Description:** Does not merge a specified pull request as it's sourceCommit starts from 0.
    - **Input:** 
      ```json
      {
