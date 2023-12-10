@@ -1,6 +1,4 @@
 # GraphQL API 
-## ER Diagram
-
 
 ## Queries
 
