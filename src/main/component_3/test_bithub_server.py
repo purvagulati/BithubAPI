@@ -1,5 +1,3 @@
-# tests/test_bithub_server.py
-
 import pytest
 from bithub_server import BithubServiceServicer
 import bithub_service_pb2
