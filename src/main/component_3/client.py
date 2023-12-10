@@ -79,8 +79,6 @@ def run():
         print("Autocomplete suggestion:", autocomplete_response.completion_suggestion)
 
         # # 3. ChatGPT for Code
-
-        
         response = stub.ChatGPTForCode(bithub_service_pb2.ChatGPTCodeTaskRequest(
             task_description="Add a function to calculate the sum of two numbers",
             repository_id=100,
@@ -104,7 +102,7 @@ def run():
             ),
             current_file_context="src/math_utils.py"
         ))
-
+        # Printing complete response
         print("ChatGPT for Code response:", response)
         # if response.delta:
         #     for change in response.delta.changes.code_changes:
@@ -172,81 +170,7 @@ def generate_requests():
             stack_trace=bithub_service_pb2.StackTrace(frames=stack_frames),
             issue_description=request["issue_description"]
         )
-        
-    # yield bithub_service_pb2.PairProgrammingRequest(
-    #     repository_id=200,  # Example repository ID
-    #     issue_description="Application crashes on startup"
-    #     # ... minimal necessary fields ...
-    # )
-
-
-
-# def generate_requests():
-#     # repository_ids = [1]  # Modify as needed
-#     # for repo_id in repository_ids:
-#     #     yield bithub_service_pb2.PairProgrammingRequest(repository_id=repo_id)
-#     #for repo_id in repository_ids:
-    
-    
-#     predefined_requests = [
-#         {
-#             "repository_id": 200,
-#             "existing_code": [
-#                 {
-#                     "file_path": "src/app.py",
-#                     "original_code": "print('Hello world')",
-#                     "modified_code": "print('Hello universe')",
-#                     "change_status": "UNCOMMITTED"
-#                 }
-#             ],
-#             "stack_trace": [
-#                 {
-#                     "file_name": "app.py",
-#                     "line_number": 10,
-#                     "method_name": "main",
-#                     "code_context": "print('Hello universe')"
-#                 }
-#             ],
-#             "issue_description": "Application crashes on startup"
-#         }
-#     ]
-
-#     for predefined_request in predefined_requests:
-#         print("Generating request for repository_id:", predefined_request["repository_id"])
-
-#         existing_code = [
-#             bithub_service_pb2.CodeChange(
-#                 file_path=change["file_path"],
-#                original_code=change["original_code"],
-#                 modified_code=change["modified_code"],
-#                 change_status=bithub_service_pb2.ChangeStatus.Value(change["change_status"])
-#             ) for change in predefined_request["existing_code"]
-#         ]
-
-#         stack_trace = [
-#             bithub_service_pb2.StackTrace.StackFrame(
-#                 file_name=frame["file_name"],
-#                 line_number=frame["line_number"],
-#                 method_name=frame["method_name"],
-#                 code_context=frame["code_context"]
-#             ) for frame in predefined_request["stack_trace"]
-#         ]
-#         print("Repositry id is: ", predefined_request["repository_id"])
-#         print("Issue description: ", predefined_request["issue_description"])
-#         yield bithub_service_pb2.PairProgrammingRequest(
-#             repository_id=predefined_request["repository_id"],
-#             existing_code=existing_code,
-#             stack_trace=stack_trace,
-#             issue_description=predefined_request["issue_description"]
-#         )
-        
-
-# def generate_requests_new():
-#     # Example repository IDs to request
-#     repository_ids = [1]  # Modify as needed
-#     for repo_id in repository_ids:
-#         yield bithub_service_pb2.PairProgrammingRequest(repository_id=repo_id)
-
+ 
 
 
 if __name__ == '__main__':

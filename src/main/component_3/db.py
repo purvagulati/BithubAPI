@@ -446,6 +446,7 @@ VIRTUAL_PAIR_PROGRAMMING_DATABASE = {
             "plain_english_description": "Fixed a syntax error in src/app.py"
         }
     },
+    # Fixes a subtraction error in an addition function.
     2: {
         "request": {
             "repository_id": 201,
@@ -496,7 +497,7 @@ VIRTUAL_PAIR_PROGRAMMING_DATABASE = {
             "plain_english_description": "Fixed the subtraction error in add method in src/utils.py"
         }
     },
-
+    #  Corrects a typo in a configuration file (DEBUG variable).
     3: {
         "request": {
             "repository_id": 202,
@@ -540,7 +541,7 @@ VIRTUAL_PAIR_PROGRAMMING_DATABASE = {
             "plain_english_description": "Corrected typo in DEBUG variable in src/config.py"
         }
     },
-
+    # Adds a timeout to API requests to handle potential freezing issues.
     4: {
         "request": {
             "repository_id": 203,
@@ -593,187 +594,3 @@ VIRTUAL_PAIR_PROGRAMMING_DATABASE = {
     }
 }
 
-
-
-VPP_DATABASE = {
-    1: {
-        "repository_id": 200,
-        "existing_code": [
-            {
-                "file_path": "src/app.py", 
-                "original_code": "print('Hello world')", 
-                "modified_code": "print('Hello universe')", 
-                "change_status": "UNCOMMITTED"
-            }
-        ],
-        "stack_trace": [
-            {
-                "file_name": "app.py", 
-                "line_number": 10, 
-                "method_name": "main", 
-                "code_context": "print('Hello universe')"
-            }
-        ],
-        "issue_description": "Application crashes on startup",
-        "conversation": [
-            {
-                "speaker": "user", 
-                "message": "The app crashes when I run it.", 
-                "timestamp": "2023-12-08 10:00:00"
-            },
-            {
-                "speaker": "AI", 
-                "message": "It looks like there's a syntax error in app.py.", 
-                "timestamp": "2023-12-08 10:01:00"
-            }
-        ],
-        "proposed_delta": {
-            "file_deltas": {
-                "is_it_committed": False,
-                "changes": [
-                    {
-                        "file_path": "src/app.py", 
-                        "original_code": "print('Hello universe')", 
-                        "modified_code": "print('Hello, universe!')", 
-                        "change_status": "UNCOMMITTED"
-                    }
-                ]
-            }
-        },
-        "plain_english_description": "Fixed a syntax error in src/app.py"
-    },
-    # Fixes a subtraction error in an addition function.
-    2: {
-        "repository_id": 201,
-        "existing_code": [
-            {
-                "file_path": "src/utils.py",
-                "original_code": "def add(a, b): return a + b",
-                "modified_code": "def add(a, b): return a - b",
-                "change_status": "UNCOMMITTED"
-            }
-        ],
-        "stack_trace": [
-            {
-                "file_name": "utils.py",
-                "line_number": 5,
-                "method_name": "add",
-                "code_context": "return a - b"
-            }
-        ],
-        "issue_description": "Incorrect addition result",
-        "conversation": [
-            {
-                "speaker": "user",
-                "message": "The add function is returning wrong results.",
-                "timestamp": "2023-12-08 11:00:00"
-            },
-            {
-                "speaker": "AI",
-                "message": "The problem seems to be in the subtraction operation in the add method.",
-                "timestamp": "2023-12-08 11:01:00"
-            }
-        ],
-        "proposed_delta": {
-            "file_deltas": {
-                "is_it_committed": False,
-                "changes": [
-                    {
-                        "file_path": "src/utils.py",
-                        "original_code": "def add(a, b): return a - b",
-                        "modified_code": "def add(a, b): return a + b",
-                        "change_status": "UNCOMMITTED"
-                    }
-                ]
-            }
-        },
-        "plain_english_description": "Fixed the subtraction error in add method in src/utils.py"
-    },
-    #  Corrects a typo in a configuration file (DEBUG variable).
-    3: {
-        "repository_id": 202,
-        "existing_code": [
-            {
-                "file_path": "src/config.py",
-                "original_code": "DEBUG = Flase",
-                "modified_code": "DEBUG = False",
-                "change_status": "UNCOMMITTED"
-            }
-        ],
-        "stack_trace": [],
-        "issue_description": "Syntax error in configuration file",
-        "conversation": [
-            {
-                "speaker": "user",
-                "message": "There's a typo in the config file.",
-                "timestamp": "2023-12-08 12:00:00"
-            },
-            {
-                "speaker": "AI",
-                "message": "The issue is a misspelling in the DEBUG variable.",
-                "timestamp": "2023-12-08 12:01:00"
-            }
-        ],
-        "proposed_delta": {
-            "file_deltas": {
-                "is_it_committed": False,
-                "changes": [
-                    {
-                        "file_path": "src/config.py",
-                        "original_code": "DEBUG = Flase",
-                        "modified_code": "DEBUG = False",
-                        "change_status": "UNCOMMITTED"
-                    }
-                ]
-            }
-        },
-        "plain_english_description": "Corrected typo in DEBUG variable in src/config.py"
-    },
-    # Adds a timeout to API requests to handle potential freezing issues.
-    4: {
-        "repository_id": 203,
-        "existing_code": [
-            {
-                "file_path": "src/api_handler.py",
-                "original_code": "response = requests.get(url)",
-                "modified_code": "response = requests.get(url, timeout=10)",
-                "change_status": "UNCOMMITTED"
-            }
-        ],
-        "stack_trace": [
-            {
-                "file_name": "api_handler.py",
-                "line_number": 25,
-                "method_name": "fetch_data",
-                "code_context": "response = requests.get(url)"
-            }
-        ],
-        "issue_description": "API calls timeout not handled",
-        "conversation": [
-            {
-                "speaker": "user",
-                "message": "Sometimes the API calls freeze the app.",
-                "timestamp": "2023-12-08 13:00:00"
-            },
-            {
-                "speaker": "AI",
-                "message": "Adding a timeout to the API request should resolve this issue.",
-                "timestamp": "2023-12-08 13:01:00"
-            }
-        ],
-        "proposed_delta": {
-            "file_deltas": {
-                "is_it_committed": False,
-                "changes": [
-                    {
-                        "file_path": "src/api_handler.py",
-                        "original_code": "response = requests.get(url)",
-                        "modified_code": "response = requests.get(url, timeout=10)",
-                        "change_status": "UNCOMMITTED"
-                    }
-                ]
-            }
-        },
-        "plain_english_description": "Added timeout to API request in src/api_handler.py"
-    }
-}

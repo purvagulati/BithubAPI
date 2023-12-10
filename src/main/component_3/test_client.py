@@ -29,6 +29,7 @@ def test_write_pr_description(stub):
     expected_description = "Modified the add function in src/main.py to include an additional parameter 'c'."
     assert response.draft_description == expected_description
 
+# PR Description error path
 def test_write_pr_description_error(stub):
     pr_request = bithub_service_pb2.PRDescriptionRequest(
         repository_id=999,  # Invalid repository ID
@@ -39,7 +40,7 @@ def test_write_pr_description_error(stub):
     #     stub.WritePRDescription(pr_request)
     # assert e.value.code() == grpc.StatusCode.NOT_FOUND
 
-
+# Test for normal behavior
 def test_smart_autocomplete(stub):
     autocomplete_request = bithub_service_pb2.SmartAutocompleteRequest(
         repository_content=bithub_service_pb2.RepositoryContent(
