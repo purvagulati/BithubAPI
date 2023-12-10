@@ -2,7 +2,7 @@
 const dbService = require('./pullRequestService');
 
 // Helper function to transform comments
-function transformComments(comments) {
+function transformInlineComments(comments) {
    return comments.map(comment => ({
       ...comment,
       // Transforming reactions object into an array.
@@ -13,6 +13,18 @@ function transformComments(comments) {
    }));
 }
 
+function transformComments(comments) {
+  return comments
+     .filter(comment => comment.lineNumber == null) // Filter out comments with a line number
+     .map(comment => ({
+        ...comment,
+        reactions: comment.reactions ? Object.entries(comment.reactions).map(([userId, reaction]) => ({
+           userId,
+           reaction
+        })) : []
+     }));
+}
+
 const resolvers = {
    // Queries
    Query: {
@@ -21,13 +33,16 @@ const resolvers = {
          id
       }) => {
          const pullRequest = dbService.findPullRequestById(id);
+         if (!pullRequest) {
+          throw new Error(`Pull request with ID ${id} not found.`);
+         }
          if (pullRequest) {
             // Augmenting the pull request with its comments using transformComments function.
             pullRequest.comments = transformComments(dbService.getCommentsByPullRequestId(pullRequest.id));
 
             pullRequest.fileChanges.forEach(fileChange => {
               fileChange.changedLines.forEach(changedLine => {
-                 changedLine.comments = transformComments(dbService.getCommentsBychangedLines(changedLine.line));
+                 changedLine.comments = transformInlineComments(dbService.getCommentsBychangedLines(changedLine.line));
               });
            });
            
@@ -111,14 +126,29 @@ const resolvers = {
       },
 
       // Resolver to merge a pull request.
-      mergePullRequest: (_, {
-         id
-      }) => dbService.mergePullRequest(id),
+      mergePullRequest: (_, { id }) => {
+        const pullRequest = dbService.mergePullRequest(id);
+        if (!pullRequest || pullRequest.error) {
+           throw new Error(pullRequest.error || `Pull request with ID ${id} not found.`);
+        }
+     
+        // Augmenting the pull request with its comments using transformComments function.
+        pullRequest.comments = transformComments(dbService.getCommentsByPullRequestId(pullRequest.id));
+        return pullRequest;
+     },
 
       // Resolver to reject a pull request.
-      rejectPullRequest: (_, {
-         id
-      }) => dbService.rejectPullRequest(id),
+      rejectPullRequest: (_, { id }) => {
+        const pullRequest = dbService.rejectPullRequest(id);
+        if (!pullRequest || pullRequest.error) {
+           throw new Error(pullRequest.error || `Pull request with ID ${id} not found.`);
+        }
+     
+        // Augmenting the pull request with its comments using transformComments function.
+        pullRequest.comments = transformComments(dbService.getCommentsByPullRequestId(pullRequest.id));
+        return pullRequest;
+     },
+     
    },
 };
 

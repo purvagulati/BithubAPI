@@ -20,8 +20,8 @@ const pullRequests = [
         fileName: 'login.js', 
         changes: 'Added null check for user credentials and updated login logic',
         changedLines: [
-          { line: 55, code: "if (userCredentials != null) {", type: '+', comments: [] },
-          { line: 56, code: "   performLogin(userCredentials);", type: '+', comments: [] }
+          { line: 55, code: "if (userCredentials != null) {", type: '+'},
+          { line: 56, code: "   performLogin(userCredentials);", type: '+' }
         ]
       },
       { 
