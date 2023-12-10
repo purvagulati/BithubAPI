@@ -267,11 +267,11 @@ This file is the service layer handling database operations related to pull requ
       ]
       }}}
      ```
-   - **Screenshot:** ![Screenshot](https://github.com/17-625-API-Design-F23/final-team-project-team-mutators/blob/component2-graphql/src/main/component_2/screenshots/q1h.png)
+   - **Screenshot:** ![Screenshot](https://github.com/17-625-API-Design-F23/final-team-project-team-mutators/blob/component2-graphql/src/main/component_2/screenshots/q1h.png))
    - **Remarks:** Successful case.
 
 2. **Testcase Identifier:** `Query1-Error`
-   - **Description:** FFetch details of a pullRequest by its unique ID.
+   - **Description:** Fetch details of a pullRequest that does not exist.
    - **Inputs:** 
      ```json
      {
@@ -291,266 +291,251 @@ This file is the service layer handling database operations related to pull requ
       }
      }
      ```
-   - **Screenshot:** ![Screenshot](https://github.com/17-625-API-Design-F23/a2-graphql-api-purvag03/blob/main/screenshots/Q1E.png)
+   - **Screenshot:** ![Screenshot](https://github.com/17-625-API-Design-F23/final-team-project-team-mutators/blob/component2-graphql/src/main/component_2/screenshots/q1e.png))
    - **Remarks:** Doctor not found.
 
 3. **Testcase Identifier:** `Query2-Happy`
-   - **Description:** Retrieve available timeslots for a doctor.
+   - **Description:** Fetches multiple pull requests based on specified filter, that is PR status.
    - **Input:** 
      ```json
-     {
-         "doctorId": "doc001"
-     }
+      {
+       "filters": {
+                "status": "pending"
+                 }
+      }
      ```
    - **Output:** 
      ```json
      {
-       "data": { 
-          "AvailableTimeslotsbyId": [
-      {"startTime": "9:00", "endTime": "9:30", "isBooked": false},
-      {"startTime": "9:30", "endTime": "10:00", "isBooked": false},
-      {"startTime": "10:00", "endTime": "10:30", "isBooked": false},
-      {"startTime": "10:30", "endTime": "11:00", "isBooked": false},
-      {"startTime": "11:00", "endTime": "11:30", "isBooked": false},
-      {"startTime": "11:30", "endTime": "12:00", "isBooked": false},
-      {"startTime": "12:00", "endTime": "12:30", "isBooked": false},
-      {"startTime": "12:30", "endTime": "13:00", "isBooked": false},
-      {"startTime": "13:00", "endTime": "13:30", "isBooked": false},
-      {"startTime": "13:30", "endTime": "14:00", "isBooked": false},
-      {"startTime": "14:00", "endTime": "14:30", "isBooked": false},
-      {"startTime": "14:30", "endTime": "15:00", "isBooked": false},
-      {"startTime": "15:00", "endTime": "15:30", "isBooked": false},
-      {"startTime": "15:30", "endTime": "16:00", "isBooked": false},
-      {"startTime": "16:00", "endTime": "16:30", "isBooked": false},
-      {"startTime": "16:30", "endTime": "17:00", "isBooked": false}
-       ]
+     "data": {
+      "pullRequests": [
+      {
+        "id": "pr-12345",
+        "title": "Fix login issue",
+        "createdAt": "2023-12-09T09:08:27.997Z",
+        "description": "This pull request fixes the login issue reported in issue #54321.",
+        "sourceCommit": "123abc",
+        "commits": "blackbox tests,whitebox test",
+        "targetBranch": "main",
+        "status": "pending",
+        "statusMessage": "Pull request is open",
+        "user": {
+          "id": "user-1",
+          "name": "Alice",
+          "email": "alice@cmu.andrew.edu"
+        },
+        "comments": [
+          {
+            "id": "comment-1",
+            "userId": "user-1",
+            "content": "Looks good to me.",
+            "reactions": [
+              {
+                "userId": "user-1",
+                "reaction": "👍"
+              },
+              {
+                "userId": "user-4",
+                "reaction": "👍"
+              }
+            ],
+            "reactionCounts": [
+              {
+                "reaction": "👍",
+                "count": 2
+              }
+            ]
+          },
+          {
+            "id": "comment-3",
+            "userId": "user-1",
+            "content": "Looks good to me.",
+            "reactions": [
+              {
+                "userId": "user-1",
+                "reaction": "👍"
+              },
+              {
+                "userId": "user-2",
+                "reaction": "😀"
+              }
+            ],
+            "reactionCounts": [
+              {
+                "reaction": "👍",
+                "count": 1
+              },
+              {
+                "reaction": "😀",
+                "count": 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pr-67890",
+        "title": "Update README",
+        "createdAt": "2023-02-09T09:08:20.997Z",
+        "description": "Updates the README file with new instructions.",
+        "sourceCommit": "0456def",
+        "commits": null,
+        "targetBranch": "develop",
+        "status": "pending",
+        "statusMessage": "Pull request is open",
+        "user": {
+          "id": "user-2",
+          "name": "Bob",
+          "email": "bob@example.com"
+        },
+        "comments": [
+          {
+            "id": "comment2",
+            "userId": "user-2",
+            "content": "Please add more details to the README changes.",
+            "reactions": [
+              {
+                "userId": "user-1",
+                "reaction": "👍"
+              },
+              {
+                "userId": "user-2",
+                "reaction": "😭"
+              }
+            ],
+            "reactionCounts": [
+              {
+                "reaction": "👍",
+                "count": 1
+              },
+              {
+                "reaction": "😭",
+                "count": 1
+              }
+            ]
+          }
+        ]
       }
-     }
+      ] } }
      ```
-   - **Screenshot:** ![Screenshot](https://github.com/17-625-API-Design-F23/a2-graphql-api-purvag03/blob/main/screenshots/Q2H.png)
+   - **Screenshot:** ![Screenshot](https://github.com/17-625-API-Design-F23/final-team-project-team-mutators/blob/component2-graphql/src/main/component_2/screenshots/q2h.png)
    - **Remarks:** Successful case.
 
-4. **Testcase Identifier:** `Query2-Error`
-   - **Description:** Timeslots for a non-existing doctor.
+   4. **Testcase Identifier:** `Query2-Error`
+   - **Description:** Fetches multiple pull requests based on specified filter, that is an inavlid PR status.
+   - **Inputs:** 
+     ```json
+      {
+     "filters": {
+         "status": "open"
+        }
+      }
+     ```
+   - **Output:** 
+     ```json
+      {
+        "errors": [
+       {
+         "message": "Invalid status filter: open"
+       }
+                 ],
+       "data": {
+           "pullRequests": null
+        }
+     }
+     ```
+   - **Screenshot:** ![Screenshot](https://github.com/17-625-API-Design-F23/final-team-project-team-mutators/blob/component2-graphql/src/main/component_2/screenshots/q2e.png))
+   - **Remarks:** 'pending', 'merged', 'rejected', 'merge conflict' are the only valid PR statuses available in BitHub. 
+
+   5. **Testcase Identifier:** `Query3-Happy`
+   - **Description:** Retrieves all comments associated of a valid pull request.
    - **Inputs:** 
      ```json
      {
-         "doctorId": "doc009"
-     }
-     ```
-   - **Output:** 
-     ```json
-     {
-       "errors": [
-         {
-           "message": "Doctor with ID doc009 not found."
-         }
-       ],
-       "data": {
-         "AvailableTimeslotsbyId": null
-       }
-     }
-     ```
-   - **Screenshot:** ![Screenshot](https://github.com/17-625-API-Design-F23/a2-graphql-api-purvag03/blob/main/screenshots/Q2E.png)
-   - **Remarks:** Doctor not found.
-
-5. **Testcase Identifier:** `Query3-Happy`
-   - **Description:** List appointments for a specific doctor.
-   - **Input:** 
-     ```json
-     {
-         "doctorId": "doc001"
+         "pullRequestId": "pr-12345"
      }
      ```
    - **Output:** 
      ```json
      {
        "data": {
-         "AppointmentsByDoctorId": [
-           {
-             "doctorId": "doc001",
-             "id": "app1",
-             "patientName": "Purva",
-             "timeslot": "9:00"
-           }
-         ]
-       }
-     }
+       "commentsByPullRequest": [
+      {
+        "id": "comment-1",
+        "userId": "user-1",
+        "content": "Looks good to me.",
+        "reactions": [
+          {
+            "userId": "user-1",
+            "reaction": "👍"
+          },
+          {
+            "userId": "user-4",
+            "reaction": "👍"
+          }
+        ],
+        "reactionCounts": [
+          {
+            "reaction": "👍",
+            "count": 2
+          }
+        ],
+        "pullRequestId": "pr-12345"
+      },
+      {
+        "id": "comment-3",
+        "userId": "user-1",
+        "content": "Looks good to me.",
+        "reactions": [
+          {
+            "userId": "user-1",
+            "reaction": "👍"
+          },
+          {
+            "userId": "user-2",
+            "reaction": "😀"
+          }
+        ],
+        "reactionCounts": [
+          {
+            "reaction": "👍",
+            "count": 1
+          },
+          {
+            "reaction": "😀",
+            "count": 1
+          }
+        ],
+        "pullRequestId": "pr-12345"
+      }
+      ]  } }
      ```
-   - **Screenshot:** ![Screenshot](https://github.com/17-625-API-Design-F23/a2-graphql-api-purvag03/blob/main/screenshots/Q3H.png)
+   - **Screenshot:** ![Screenshot](https://github.com/17-625-API-Design-F23/final-team-project-team-mutators/blob/component2-graphql/src/main/component_2/screenshots/q3h.png))
    - **Remarks:** Successful case.
 
 6. **Testcase Identifier:** `Query3-Error`
-   - **Description:** Appointments for a non-existing doctor.
-   - **Input:** 
+   - **Description:** Comments associated of an invalid pull request `id` return null.
+   - **Inputs:** 
      ```json
      {
-         "doctorId": "doc009"
+         "pullRequestId": "pr-0"
      }
      ```
    - **Output:** 
      ```json
-     {
-       "errors": [
-         {
-           "message": "Doctor with ID doc009 not found."
-         }
-       ],
-       "data": {
-         "AppointmentsByDoctorId": null
-       }
-     }
-     ```
-   - **Screenshot:** ![Screenshot](/screenshots/Q3E.png)
-   - **Remarks:** Doctor not found.
-
-7. **Testcase Identifier:** `Mut1-Happy`
-   - **Description:** Successfully book an appointment.
-   - **Input:** 
-     ```json
-     {
-         "doctorId": "doc001",
-         "patientName": "Purva",
-         "timeslot": "9:00"
-     }
-     ```
-   - **Output:** 
-     ```json
-     {
-       "data": {
-         "bookAppointment": {
-           "doctorId": "doc001",
-           "id": "app1",
-           "patientName": "Purva",
-           "timeslot": "9:00" 
-         }
-       }
-     }
-     ```
-   - **Screenshot:** ![Screenshot](/screenshots/M1H.png)
-                    ![Screenshot](/screenshots/M1H1.png)
-   - **Remarks:** Successful case.
-
-8. **Testcase Identifier:** `Mut1-Error`
-   - **Description:** Book with invalid timeslot.
-   - **Input:** 
-     ```json
-     {
-         "doctorId": "doc001",
-         "patientName": "Purva",
-         "timeslot": "18:00"
-     }
-     ```
-   - **Output:** 
-     ```json
-     {
-       "errors": [
-         {
-           "message": "Invalid timeslot: 18:00. Please choose a valid timeslot."
-         }
-       ],
-       "data": {
-         "bookAppointment": null
-       }
-     }
-     ```
-   - **Screenshot:** ![Screenshot](/Users/purvagulati/final-team-project-team-mutators/src/main/component_2/screenshots/q1h.png)
-   - **Remarks:** Timeslot error.
-
-9. **Testcase Identifier:** `Mut2-Happy`
-   - **Description:** Successfully cancel an appointment.
-   - **Input:** 
-     ```json
-     {
-         "appointmentId": "app1"
-     }
-     ```
-   - **Output:** 
-     ```json
-     {
-       "data": {
-         "cancelAppointment": true
-       }
-     }
-     ```
-   - **Screenshot:** ![Screenshot](https://github.com/17-625-API-Design-F23/a2-graphql-api-purvag03/blob/main/screenshots/M2H.png)
-   - **Remarks:** Successful case.
-
-10. **Testcase Identifier:** `Mut2-Error`
-    - **Description:** Cancel non-existing appointment.
-    - **Input:** 
-      ```json
-      {
-          "appointmentId": "app2"
-      }
-      ```
-    - **Output:** 
-      ```json
-      {
+        {
         "errors": [
-          {
-            "message": "Invalid appointment ID: app2. Appointment does not exist."
-          }
-        ],
-        "data": {
-          "cancelAppointment": null
-        }
-      }
-      ```
-    - **Screenshot:** ![Screenshot](https://github.com/17-625-API-Design-F23/a2-graphql-api-purvag03/blob/main/screenshots/M2E.png)
-    - **Remarks:** Appointment not found.
-
-11. **Testcase Identifier:** `Mut3-Happy`
-    - **Description:** Successfully update patient name.
-    - **Input:** 
-      ```json
-      {
-          "appointmentId": "app1",
-          "newPatientName": "PurvaNew"
-      }
-      ```
-    - **Output:** 
-      ```json
-      {
-        "data": {
-          "updatePatientName": {
-            "doctorId": "doc001",
-            "id": "app1",
-            "patientName": "PurvaNew",
-            "timeslot": "9:00"
-          }
-        }
-      }
-      ```
-    - **Screenshot:** ![Screenshot](https://github.com/17-625-API-Design-F23/a2-graphql-api-purvag03/blob/main/screenshots/M3H.png)
-    - **Remarks:** Successful case.
-
-12. **Testcase Identifier:** `Mut3-Error`
-    - **Description:** Update on non-existing appointment.
-    - **Input:** 
-      ```json
-      {
-          "appointmentId": "app2",
-          "newPatientName": "PurvaNew"
-      }
-      ```
-    - **Output:** 
-      ```json
-      {
-        "errors": [
-          {
-            "message": "Invalid appointment ID: app2. Appointment does not exist."
-          }
-        ],
-        "data": {
-          "updatePatientName": null
-        }
-      }
-      ```
-    - **Screenshot:** ![Screenshot](https://github.com/17-625-API-Design-F23/a2-graphql-api-purvag03/blob/main/screenshots/M3E.png)
-    - **Remarks:** Appointment not found.
-
-
+       {
+         "message": "Pull request with ID pr-0 not found."
+       }
+              ],
+      "data": {
+          "commentsByPullRequest": null
+            }
+       }
+     ```
+   - **Screenshot:** ![Screenshot](https://github.com/17-625-API-Design-F23/a2-graphql-api-purvag03/blob/main/screenshots/Q2E.png)
+   - **Remarks:** No comments are displayed as the pull request with specified id does not exist.
 
 
 

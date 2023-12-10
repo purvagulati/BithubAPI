@@ -10,23 +10,40 @@ const {
  function findPullRequestById(id) {
     return pullRequests.find(pr => pr.id === id);
  }
+
+ const validStatuses = ['pending', 'merged', 'rejected', 'merge conflict'];
  
  // Retrieves pull requests based on provided filters.
  function getPullRequests(filters = {}) {
+    // Check if status filter is provided and if it's valid
+    if (filters.status && !validStatuses.includes(filters.status)) {
+       throw new Error(`Invalid status filter: ${filters.status}`);
+    }
+ 
     return pullRequests.filter(pr => {
        return Object.entries(filters).every(([key, value]) => pr[key] === value);
     });
  }
+
+ // Function to check if a pull request exists
+ function pullRequestExists(prId) {
+    return pullRequests.some(pr => pr.id === prId);
+}
  
  // Fetches comments associated with a specific pull request.
  function getCommentsByPullRequestId(prId) {
+    // Check if the pull request exists
+    if (!pullRequestExists(prId)) {
+        throw new Error(`Pull request with ID ${prId} not found.`);
+    }
+
     return comments
-       .filter(comment => comment.pullRequestId === prId)
-       .map(comment => ({
-          ...comment,
-          reactionCounts: calculateReactionCounts(comment.reactions)
-       }));
- }
+        .filter(comment => comment.pullRequestId === prId)
+        .map(comment => ({
+            ...comment,
+            reactionCounts: calculateReactionCounts(comment.reactions)
+        }));
+}
 
  function getCommentsBychangedLines(lineNumber) {
     return comments
