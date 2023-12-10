@@ -42,14 +42,5 @@ startServer();
 
 app.listen(port, () => console.info(`Server started on port ${port}`));
 
-## Installation & Setup
-To get started, you will need to have Python 3.12.0 installed on your machine. If you don't have them installed, you can download them from the official website: https://www.python.org/downloads/
-
-## Pytest installation
-Use pip to install pytest and pytest-cov.
-
-```bash
-pip install pytest pytest-cov
-```
 
 
